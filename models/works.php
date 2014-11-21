@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 //models
 
 //Get all of the works
-function getAllWorks() {
-	$result = mysql_query("SELECT id, name FROM test");
+function getAllWorksByUserId($userId) {
+	$result = mysql_query("SELECT * FROM works where userId = $userId");
 	$ret = [];
 	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 	    array_push($ret, $row);
@@ -11,6 +11,15 @@ function getAllWorks() {
 
 	mysql_free_result($result);
 	return $ret;
+}
+
+// Get one works by workId
+function getWorksById($worksId) {
+	$result = mysql_query("SELECT * FROM works where id = $worksId");
+	$row = mysql_fetch_array($result, MYSQL_ASSOC);
+
+	mysql_free_result($result);
+	return $row;
 }
 
 ?>

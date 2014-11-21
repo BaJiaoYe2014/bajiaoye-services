@@ -1,0 +1,34 @@
+﻿{
+  "id": "001",
+  "name": "模版一",
+  "author": "芭蕉叶",
+  "thumb": "imgs/tpl1-thumb.jpg",
+  "type": "会议活动",
+  "url": "http://demo.com/spark",
+  "backgroundMusic": "imgs/a.mp3",
+  "isAutoPlay": "true",
+  "backgroundColor": "#FFFF00",
+  "desc": "this is the second template",
+  "pages": [
+    {
+      "index":"0",
+      "name": "开 篇",
+      "style": "common"
+    },
+    {
+      "index":"1",
+      "name": "页面一",
+      "style": "common"
+    },
+    {
+      "index":"2",
+      "name": "页面二",
+      "style": "common"
+    },
+    {
+      "index":"3",
+      "name": "页面三",
+      "style": "common"
+    }
+  ]
+}
