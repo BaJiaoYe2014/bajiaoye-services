@@ -22,4 +22,21 @@ function getWorksById($worksId) {
 	return $row;
 }
 
+// Init one works
+function initWorks($works) {
+	$ret = false;
+	$works = (object) $works;
+	// print_r($works);
+	$result = mysql_query("SELECT * FROM users where userId = $works->userId");
+	$user = (object) mysql_fetch_array($result, MYSQL_ASSOC);
+	// print_r($user);
+	if($user) {
+		$jsonStr = json_encode($works->configurations);
+		$sql = "INSERT INTO works (name, author, userId, originBy, configurations) values ('$works->name', '$user->name', '$user->userId', '$works->tplId', '$jsonStr')";
+		$ret = mysql_query($sql);
+	}
+	return $ret;
+}
+
+
 ?>

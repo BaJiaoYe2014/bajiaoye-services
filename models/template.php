@@ -7,10 +7,16 @@ function getTemplateList() {
 	return $jasonStr;
 }
 
-// Get one works by workId
-function getTemplateById($worksId) {
-	
-	return $row;
+// Get one template by id
+function getTemplateById($tplId) {
+	$fileName = 'templates/tpls/tpl'.$tplId.'.json';
+	if (file_exists($fileName)) {
+		$jasonStr = file_get_contents($fileName);
+	}else{
+		$obj = (object)array();
+		$jasonStr = json_encode($obj);
+	}
+	return $jasonStr;
 }
 
 ?>

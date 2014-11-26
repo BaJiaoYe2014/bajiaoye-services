@@ -14,8 +14,22 @@ $app->get('/opus/:worksId', 'middleware', function ($worksId) {
 	echo json_encode($result);
 });
 
+$app->post('/opusCreate', 'middleware', function () use ($app) {
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$result = initWorks($jsonObj);
+	echo json_encode($result);
+	// echo $result;
+});
+
 $app->get('/tplList', 'middleware', function () {
 	$result = getTemplateList();
+	echo $result;
+});
+
+$app->get('/tpl/:tplId', 'middleware', function ($tplId) {
+	$result = getTemplateById($tplId);
 	echo $result;
 });
 
