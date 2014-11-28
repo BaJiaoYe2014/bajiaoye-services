@@ -6,6 +6,7 @@ $app = new \Slim\Slim();
 // $request = $app->request;
 // print_r($request);
 
+date_default_timezone_set("PRC");
 
 require 'conn.php';
 

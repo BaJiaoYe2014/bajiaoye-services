@@ -2,7 +2,7 @@
   "id": "001",
   "name": "模版一",
   "author": "芭蕉叶",
-  "thumb": "thumb.jpg",
+  "thumb": "templates/tpls/001/thumb.jpg",
   "type": "会议活动",
   "url": "http://demo.com/spark",
   "backgroundMusic": "imgs/a.mp3",
@@ -22,7 +22,7 @@
           "delayTime": 1000,
           "size": "640*1008",
           "name": "1-4.jpg",
-          "src": "1-4.jpg"
+          "src": "templates/tpls/001/1-4.jpg"
         }
       ]
     },
@@ -38,7 +38,7 @@
           "delayTime": 6,
           "size": "640*1008",
           "name": "1-1.jpg",
-          "src": "1-1.jpg"
+          "src": "templates/tpls/001/1-1.jpg"
         },
         {
           "from": "7",
@@ -46,7 +46,7 @@
           "delayTime": 5,
           "size": "640*1008",
           "name": "1-2.png",
-          "src": "1-2.png"
+          "src": "templates/tpls/001/1-2.png"
         },
         {
           "from": "5",
@@ -54,7 +54,7 @@
           "delayTime": 4,
           "size": "640*1008",
           "name": "1-3.png",
-          "src": "1-3.png"
+          "src": "templates/tpls/001/1-3.png"
         }
       ]
     },
@@ -62,13 +62,13 @@
       "index":"2",
       "name": "页面二",
       "desc": "在页面的表现上，你可以添加多个图层并为每个图层设置运动效果，请注意PNG透明图片的使用",
-      "styleType": "common"
+      "styleType": "other"
     },
     {
       "index":"3",
       "name": "页面三",
       "desc": "在页面的表现上，你可以添加多个图层并为每个图层设置运动效果，请注意PNG透明图片的使用",
-      "styleType": "common"
+      "styleType": "other"
     }
   ]
 }
