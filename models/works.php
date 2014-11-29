@@ -32,22 +32,7 @@ function initWorks($works) {
 	$user = (object) mysql_fetch_array($result, MYSQL_ASSOC);
 	// print_r($user);
 	if($user) {
-		$pages = array();
-	    foreach ( $works->pages as $item ) {
-	    	// print_r($item);
-	        $item["name"] = urlencode($item["name"]);
-	        $item["desc"] = urlencode($item["desc"]);
-	        if($item["animateImgs"]) {
-	        	$elements = array();
-		        foreach($item["animateImgs"] as $ele) {
-		        	$ele["name"] = urlencode($ele["name"]);
-		        	$elements[] = $ele;
-		        }
-		        $item["animateImgs"] = $elements;
-	        }// if
-	        $pages[] = $item;
-	    }  
-		$jsonStr = urldecode(json_encode($pages));
+		$jsonStr = convertChar($works);
 		$sql = "INSERT INTO works (name, author, thumb, userId, originBy, pages) values ('$works->name', '$user->name', '$works->thumb', '$user->userId', '$works->tplId', '$jsonStr')";
 		mysql_query($sql);
 		$ret = mysql_insert_id();
@@ -57,7 +42,7 @@ function initWorks($works) {
 
 function updateWorks($works) {
 	$works = (object) $works;
-	$jsonStr = json_encode($works->pages);
+	$jsonStr = convertChar($works);
 	$phptime = time();
 	$mysqltime=date('Y-m-d H:i:s',$phptime);
 	$sql = "UPDATE works SET ";
@@ -81,6 +66,26 @@ function updateWorks($works) {
 	// echo $sql;
 	$ret = mysql_query($sql);
 	return $ret;
+}
+
+function convertChar($works) {
+	$pages = array();
+    foreach ( $works->pages as $item ) {
+    	// print_r($item);
+        $item["name"] = urlencode($item["name"]);
+        $item["desc"] = urlencode($item["desc"]);
+        if($item["animateImgs"]) {
+        	$elements = array();
+	        foreach($item["animateImgs"] as $ele) {
+	        	$ele["name"] = urlencode($ele["name"]);
+	        	$elements[] = $ele;
+	        }
+	        $item["animateImgs"] = $elements;
+        }// if
+        $pages[] = $item;
+    }
+    $jsonStr = urldecode(json_encode($pages));
+    return $jsonStr;
 }
 
 
