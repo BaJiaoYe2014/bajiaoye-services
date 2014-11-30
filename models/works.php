@@ -59,7 +59,7 @@ function updateWorks($works) {
 		$sql .= "url = '$works->url', ";
 	}
 	if($works->pages) {
-		$jsonStr = json_encode($works->pages);
+		// $jsonStr = json_encode($works->pages);
 		$sql .= "pages = '$jsonStr', ";
 	}
 	$sql .= "lastModify='$mysqltime' WHERE id = '$works->id'";
@@ -67,6 +67,14 @@ function updateWorks($works) {
 	$ret = mysql_query($sql);
 	return $ret;
 }
+
+function deleteWorksById($worksId) {
+	$sql = "DELETE FROM works where id = $worksId";
+	$result = mysql_query($sql);
+
+	return $result;
+}
+
 
 function convertChar($works) {
 	$pages = array();

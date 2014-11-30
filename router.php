@@ -46,6 +46,12 @@ $app->post('/opusUpdate', 'middleware', function () use ($app) {
 	echo json_encode($result);
 });
 
+$app->post('/opusDelete/:worksId', 'middleware', function ($worksId) {
+	$ret = deleteUserWorksFiles($worksId);
+	$result = deleteWorksById($worksId);
+	echo json_encode($result);
+});
+
 $app->get('/tplList', 'middleware', function () {
 	$result = getTemplateList();
 	echo $result;
