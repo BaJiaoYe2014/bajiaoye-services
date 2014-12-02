@@ -33,7 +33,7 @@ $app->post('/opusCreate', 'middleware', function () use ($app) {
 	$result = initWorks($jsonObj);
 	if($result) {
 		// print_r($jsonObj);
-		createWorksImages($jsonObj, $result);
+		createWorksImages($jsonObj['tplId'], $result, $jsonObj['userId']);
 	}
 	echo json_encode($result);
 });

@@ -1,34 +1,37 @@
 <?php
 // create directory and copy image to specified place
-
+// createWorksImages('001','62', '1');
 // 
-function createWorksImages($works, $worksId) {
+function createWorksImages($tplId, $worksId, $userId) {
 	// echo dirname(__file__);
-	$works = (object) $works;
-	// print_r($works);
-	$destDir = 'works/'. $worksId.'/';
+	$destDir = 'works/'. $worksId.'/images/';
 	if(!file_exists($destDir)) {
-		mkdir($destDir);
+		mkdir($destDir, 0777, true);
 	}
-	if(strpos($works->thumb,'template') !== 0) {
-		$arr = explode("/", $works->thumb);
-		$len = count($arr)-1;
-		copy($works->thumb, $destDir.$arr[$len]);
+	$from = 'templates/tpls/'.$tplId.'/';
+	copyDirFiles($from, $destDir);
+	//
+	$tmpPath = 'tmp/'.$userId.'/';
+	if(file_exists($tmpPath)) {
+		copyDirFiles($tmpPath, $destDir);
+		delete_directory($tmpPath);
 	}
-	foreach($works->pages as $item) {
-		if($item["animateImgs"]) {
-			foreach($item["animateImgs"] as $ele) {
-				if($ele["src"] && strpos($ele["src"],'template') !== 0) {
-					$arr = explode("/", $ele["src"]);
-					$len = count($arr)-1;
-					$from = $ele["src"];
-					$dest = $destDir.$arr[$len];
-					copy($from, $dest);
-				}
-			}// foreach
+}
+
+function copyDirFiles($from, $dest) {
+	if(is_dir($from) and is_readable($from)) {
+		$handle = opendir($from);
+		while(false !== ($fileName = readdir($handle))) {
+			$fullName = $from.'/'.$fileName;
+			if(!is_file($fullName)) continue;
+			$exts = array('jpg','png','mp3','gif');
+			$info = pathinfo($fullName);
+			if(in_array($info['extension'], $exts)) {
+				copy($fullName, $dest.'/'.$fileName);
+			}
 		}
-		// print_r($item);
-	}// foreach
+		closedir($handle);
+	}
 }
 
 function deleteUserWorksFiles($worksId) {

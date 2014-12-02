@@ -81,7 +81,9 @@ function convertChar($works) {
     foreach ( $works->pages as $item ) {
     	// print_r($item);
         $item["name"] = urlencode($item["name"]);
-        $item["desc"] = urlencode($item["desc"]);
+        if($item["desc"]) {
+        	$item["desc"] = urlencode($item["desc"]);
+        }
         if($item["animateImgs"]) {
         	$elements = array();
 	        foreach($item["animateImgs"] as $ele) {

@@ -153,7 +153,7 @@
       "background": "video_7_bg.jpg",
       "videoScreenshot": "video_7_cover.jpg",
       "videoButton": "video_7_btn.png",
-      "videoCode": "<iframe height=498 width=510 src='http://player.youku.com/embed/XNDk3MjMzMDY0' frameborder=0 allowfullscreen></iframe>"
+      "videoCode": "&lt;iframe height=498 width=510 src=&#39;http://player.youku.com/embed/XNDk3MjMzMDY0&#39; frameborder=0 allowfullscreen&gt;&lt;/iframe&gt;"
     }
   ]
 }
