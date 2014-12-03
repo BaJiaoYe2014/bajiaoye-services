@@ -1,0 +1,25 @@
+﻿JSON结构一些问题:
+
+1）必须包括节点"global":{ .... } ,现在没有
+
+2）必须包括节点"startAnimate":{ .... },现在没有
+
+3）内容结点 "contentPageList": {....} ,结点的keys不对  "pages"》"contentPageList"
+
+4）每个页面的对象，包括
+   "background",页面主图，现在没有；
+   "type"，页面类型值为"commom,gallery,map......",必须有。现在key名字不对"styleType"》“type”,值也不对;
+   "effect",页面切换效果。“fade”和"120%",默认"fade",可以不写;
+   "animateImgs",页面飞来飞去的图片. 具体对象{},
+    from取值left,right,top,bottom 4种,没有3,7这样的值，
+    delayTime毫秒为单位的，6,5,4有点小哦；
+
+
+另外能直接生成  var app = {......(这种配置数据)}； 然后文件名为config.js这样的文件？
+    
+    
+
+
+
+
+ 
