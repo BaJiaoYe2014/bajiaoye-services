@@ -1,21 +1,112 @@
 <?php
 // create directory and copy image to specified place
 // createWorksImages('001','62', '1');
-// 
-function createWorksImages($tplId, $worksId, $userId) {
-	// echo dirname(__file__);
-	$destDir = 'works/'. $worksId.'/images/';
-	if(!file_exists($destDir)) {
-		mkdir($destDir, 0777, true);
-	}
-	$from = 'templates/tpls/'.$tplId.'/';
-	copyDirFiles($from, $destDir);
-	//
+// require 'test.php';
+// $a = json_decode($test);
+// copyWorksImagesToTmp($a);
+// completeCopyWorks('67', '1');
+
+function copyWorksImagesToTmp($works) {
+	// then copy them to /tmp/userId/ to use
+	$userId = $works->userId;
 	$tmpPath = 'tmp/'.$userId.'/';
-	if(file_exists($tmpPath)) {
-		copyDirFiles($tmpPath, $destDir);
-		delete_directory($tmpPath);
+	if(!file_exists($tmpPath)) {
+		mkdir($tmpPath, 0777, true);
+	}else{
+		delete_directory($tmpPath); // make sure pure images, remove unused images
+		mkdir($tmpPath, 0777, true);
 	}
+	$result = travelWorksImages($works);
+	// print_r($result);
+	foreach ($result as $item) {
+		$arr = explode('/', $item);
+		$last = count($arr)-1;
+		$fileName = $arr[$last];
+		copy($item, $tmpPath.'/'.$fileName);
+	}
+}
+
+// from tmp to works dir.
+function completeCopyWorks($worksId, $userId) {
+	$from = 'tmp/'.$userId.'/';
+	$dest = 'works/'.$worksId.'/images/';
+	if(!file_exists($dest)) {
+		mkdir($dest, 0777, true);
+	}
+	if(file_exists($from)) {
+		copyDirFiles($from, $dest);
+		delete_directory($from);
+	}
+}
+
+function travelWorksImages($works) {
+	//travel all works, get every image, video except works directory
+	$ret = array();
+	// print_r($works);
+
+	// $works = (object) $works;
+	foreach ($works as $key => $value) {
+		if(getValidValues($key, $value)){//value is valid
+			if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+				$ret[] = $value;
+			}
+		}
+	}
+	// print_r($works);
+	if($works->music) {
+		foreach ($works->music as $key => $value) {
+			if(getValidValues($key, $value)){//value is valid
+				if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+					$ret[] = $value;
+				}
+			}
+		}
+	}
+	foreach ($works->pages as $item) {
+		foreach ($item as $k => $v) {
+			if(getValidValues($k, $v)){//value is valid
+				if(strrpos($v, "tmp/") === false  && strrpos($v, "works/") === false){
+					$ret[] = $v;
+				}
+			}
+			if($k == 'animateImgs') {
+				foreach ($v as $a) {
+					foreach ($a as $key => $value) {
+						if(getValidValues($key, $value)){//value is valid
+							if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+								$ret[] = $value;
+							}
+						}
+					}
+				}
+			}
+			if($k == 'imgList') {
+				foreach ($v as $key => $value) {
+					if(getValidValues($key+1, $value)){//value is valid
+						if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+							$ret[] = $value;
+						}
+					}
+				}
+			}
+		}// for
+	}
+	return $ret;
+}
+
+function getValidValues($key, $value) {
+	$ret = false;
+	$exts = array('jpg','png','mp3','gif');
+	if($key != 'imgName' && $key != 'imgTipName' && !is_array($value) && !is_object($value)) {
+		$arr = explode('.', $value);
+		if(count($arr) > 0) {
+			$last = count($arr) - 1;
+			if(in_array($arr[$last], $exts)) {
+				$ret = true;
+			}
+		}// if
+	}
+	return $ret;
 }
 
 function copyDirFiles($from, $dest) {

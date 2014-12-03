@@ -26,7 +26,7 @@ function getWorksById($worksId) {
 // Init one works
 function initWorks($works) {
 	$ret = 0;
-	$works = (object) $works;
+	// $works = (object) $works;
 	// print_r($works);
 	$result = mysql_query("SELECT * FROM users where userId = $works->userId");
 	$user = (object) mysql_fetch_array($result, MYSQL_ASSOC);
@@ -41,7 +41,7 @@ function initWorks($works) {
 }
 
 function updateWorks($works) {
-	$works = (object) $works;
+	// $works = (object) $works;
 	$jsonStr = convertChar($works);
 	$phptime = time();
 	$mysqltime=date('Y-m-d H:i:s',$phptime);
@@ -75,27 +75,115 @@ function deleteWorksById($worksId) {
 	return $result;
 }
 
-
 function convertChar($works) {
+	// print_r($works);
+	// return;
 	$pages = array();
     foreach ( $works->pages as $item ) {
     	// print_r($item);
-        $item["name"] = urlencode($item["name"]);
-        if($item["desc"]) {
-        	$item["desc"] = urlencode($item["desc"]);
-        }
-        if($item["animateImgs"]) {
+    	if($item->name) {
+    		$item->name = urlencode($item->name);
+    	}
+    	if($item->imgName) {
+    		$item->imgName = urlencode($item->imgName);
+    	}
+    	if($item->imgTipName) {
+    		$item->imgTipName = urlencode($item->imgTipName);
+    	}
+        
+        if($item->animateImgs) {
         	$elements = array();
-	        foreach($item["animateImgs"] as $ele) {
-	        	$ele["name"] = urlencode($ele["name"]);
+	        foreach($item->animateImgs as $ele) {
+	        	if($ele->name) {
+	        		$ele->name = urlencode($ele->name);
+	        	}
+	        	if($ele->imgName) {
+	        		$ele->imgName = urlencode($ele->imgName);
+	        	}
+	        	
 	        	$elements[] = $ele;
 	        }
-	        $item["animateImgs"] = $elements;
+	        $item->animateImgs = $elements;
         }// if
         $pages[] = $item;
     }
     $jsonStr = urldecode(json_encode($pages));
     return $jsonStr;
+}
+
+function refactorWorks($works, $worksId) {
+	// $works = (object) $works;
+	// print_r($works);
+	foreach ($works as $key => $value) {
+		if(getValidValues($key, $value)){//value is valid
+			if(strrpos($value, "works/") === false){
+				$fullName = getNewName($worksId, $value);
+				$works->$key = $fullName;
+			}
+		}
+	}
+	if($works->music) {
+		foreach ($works->music as $key => $value) {
+			if(getValidValues($key, $value)){//value is valid
+				if(strrpos($value, "works/") === false){
+					$fullName = getNewName($worksId, $value);
+					$works->music->$key = $fullName;
+				}
+			}
+		}
+	}
+	$temp = array();
+	// $works->pages = (object) $works->pages;
+	foreach ($works->pages as $item) {
+		foreach ($item as $k => $v) {
+			if(getValidValues($k, $v)){//value is valid
+				if(strrpos($v, "works/") === false){
+					$fullName = getNewName($worksId, $v);
+					$item->$k = $fullName;
+				}
+			}
+			if($k == 'animateImgs') {
+				$animateImgs = array();
+				foreach ($v as $a) {
+					foreach ($a as $key => $value) {
+						if(getValidValues($key, $value)){//value is valid
+							if(strrpos($value, "works/") === false){
+								$fullName = getNewName($worksId, $value);
+								$a->$key = $fullName;
+							}
+						}
+					}
+					$animateImgs[] = $a;
+				}
+				$item->animateImgs = $animateImgs;
+			}
+			if($k == 'imgList') {
+				$imgList = array();
+				foreach ($v as $key => $value) {
+					if(getValidValues($key+1, $value)){//value is valid
+						if(strrpos($value, "works/") === false){
+							$fullName = getNewName($worksId, $value);
+							$imgList[] = $fullName;
+						}
+					}
+				}
+				$item->imgList = $imgList;
+			}
+		}// for
+		$temp[] = $item;
+	}
+	$works->pages = $temp;
+	return $works;
+}
+
+function getNewName($worksId,$value) {
+	$replacePath = 'works/'.$worksId.'/images/';
+	
+	$arr = explode('/', $value);
+	$last = count($arr) - 1;
+	$fullName = $replacePath.$arr[$last];
+	// $works->$key = $fullName;
+	return $fullName;
 }
 
 
