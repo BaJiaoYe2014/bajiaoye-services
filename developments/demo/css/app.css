@@ -275,6 +275,17 @@ pageElement animate end
 	}
 }
 
+.toShow{
+	-webkit-animation: toShow_ani .9s ease-out;
+}
+
+@-webkit-keyframes toShow_ani{
+	100%{
+		opacity:1;
+	}
+}
+
+
 .toLeft_0{
 	-webkit-animation: toLeft_0_ani .7s ease-out;
 }
@@ -327,6 +338,18 @@ pageElement animate end
 .highZindex{
 	z-index: 20;
 }
+.zInddex1{
+	z-index: 1;
+}
+.zIndex11{
+	z-index: 11;
+}
+.zIndex20{
+	z-index: 20;
+}
+.zIndex100{
+	z-index: 100;
+}
 .disBlock{
 	display: block;
 }
@@ -334,7 +357,7 @@ pageElement animate end
 	display: none;
 }
 .opacity100{
-	opacity: 100;
+	opacity: 1;
 }
 .opacity0{
 	opacity: 0;

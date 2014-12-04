@@ -781,16 +781,16 @@ app.fn.PageContent = function(){
 		var effect  = item.effect?item.effect:'fade',
 			bigSizeStyle = effect==='120%'?'bigSize120':'',
             pageHtml = '',
-            imgList  = item.imgList,
+            animateImgs  = item.animateImgs,
             pageBg   = item.background,
             styleStr = pageBg?'style="background-image:url(images/'+ pageBg +')"':'',
             curShow  = '';
 
         pageHtml = '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex '+ bigSizeStyle +' disNone">';
         
-        for(var i=0,len = imgList.length; i<len; i++){
+        for(var i=0,len = animateImgs.length; i<len; i++){
         	curShow = i===0? 'true':'';
-        	pageHtml += '<div type="' + type + '" class="likePageBox" ' + curShow + ' index="'+ i +'" style="background-image:url(images/'+ imgList[i] +')"> </div>';
+        	pageHtml += '<div type="' + type + '" class="likePageBox" ' + curShow + ' index="'+ i +'" style="background-image:url(images/'+ animateImgs[i]['src'] +')"> </div>';
         }
         pageHtml += '</div>';
         return pageHtml;
@@ -801,16 +801,17 @@ app.fn.PageContent = function(){
 		var effect  = item.effect?item.effect:'fade',
 			bigSizeStyle = effect==='120%'?'bigSize120':'',
             pageHtml = '',
-            imgList  = item.imgList,
+            animateImgs  = item.animateImgs,
             pageBg   = item.background,
             styleStr = pageBg?'style="background-image:url(images/'+ pageBg +')"':'',
-            curShow  = '';
+            curShow  = '',
+            zindex   = animateImgs.length;
 
         pageHtml = '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex '+ bigSizeStyle +' disNone">';
         
-        for(var i=0,len = imgList.length; i<len; i++){
+        for(var i=0,len = animateImgs.length; i<len; i++){
         	curShow = i===0? 'true':'';
-        	pageHtml += '<div slideImg="true" class="likePageBox" ' + curShow + ' index="'+ i +'" style="background-image:url(images/'+ imgList[i] +')"> </div>';
+        	pageHtml += '<div slideImg="true" class="likePageBox" ' + curShow + ' index="'+ i +'" style="background-image:url(images/'+ animateImgs[i]['src'] +');)"> </div>';
         }
         pageHtml += '</div>';
         return pageHtml;
@@ -870,7 +871,8 @@ app.fn.PageContent = function(){
 		    fadePages = pageList.filter('div[effect="fade"]'),
 		    innnerAnimateBox = that.pageList.find('div[animate="true"]'),
 		    tipImgBoxs = that.pageList.find('div[tipImg="true"]'),
-		    slideImgBoxs = that.pageList.find('div[slide="true"]');
+		    slideImgBoxs = that.pageList.find('div[slide="true"]'),
+		    Img360Boxs = that.pageList.filter('[type="360"]');
 
 		setCssEvt(fadePages,function($element){
 			if($element.hasClass('toOpacity100')){
@@ -938,7 +940,6 @@ app.fn.PageContent = function(){
 
 			
 		})
- 
 
 		//百度map按钮
 		var mapPage = that.pageList.filter('[type="map"]'),
@@ -946,9 +947,6 @@ app.fn.PageContent = function(){
 		showMapButton.bind('touchstart',function(){
 			
 		})
-
-
-
 	}
 
 	function pageTouchEvt(){
@@ -982,6 +980,7 @@ app.fn.PageContent = function(){
 	        diffX = endX - startX;
 	        diffY = endY - startY;
 		    startAnimate();
+
 		    e.stopPropagation();
     		e.preventDefault(); 
     		return false
@@ -991,12 +990,12 @@ app.fn.PageContent = function(){
 		function startAnimate(){
 			console.log('that.pageIsMove=' +　that.pageIsMove);
 			if(that.pageIsMove) return;
-			that.pageIsMove = true;
+			//that.pageIsMove = true;
 			var nextIndex = 0;
+
 			//左右滑动
 			if( Math.abs(diffX) > that.pageSize.width/5 && Math.abs(diffX) > Math.abs(diffY)){   // shuiping slide
 				leftRightSlide(diffX);
-
 			}else if( Math.abs(diffY) > that.pageSize.height/5){
 				if(diffY>0){
 					//上一张
@@ -1019,17 +1018,77 @@ app.fn.PageContent = function(){
 		that.curPageType  = that.pageList.eq(that.curPageIndex).attr('type');
 		switch(that.curPageType){
 			case 'gallery':
-			gallerySlide(diffX);
+			pageGallerySlide(diffX);
+			break;
+
+			case '360':
+			page360Slide(diffX);
 			break;
 
 			case 'slide':
-			slideImg(diffX);
+			pageSlide(diffX);
 			break;
 
 			default:
 			that.pageIsMove = false;
 			break;
 		}
+	}
+
+	function pageSlide(diffX){
+		if(that.pageIsMove){
+			return;
+		}
+		var curPage = that.pageList.eq(that.curPageIndex),
+			slideImgList = curPage.find('div[slideImg="true"]'),
+			slideLength  = slideImgList.length,
+		    curShowIndex = Number(curPage.attr('curShowIndex')),
+		    targetIndex  = 0,
+		    targetDiv = null;
+
+		//page360IsPlay
+		if(diffX>0){
+			targetIndex = curShowIndex - 1;
+			if(targetIndex === -1){
+				targetIndex = slideLength-1;
+			}
+		}else{   // to left,show next image
+			targetIndex = curShowIndex + 1;
+			if(targetIndex === slideLength){
+				targetIndex = 0;
+			}
+		}
+		that.pageIsMove = true;
+		targetDiv = slideImgList.eq(targetIndex);
+		targetDiv.addClass('zIndex100 opacity0 toShow');
+	}
+
+	function page360Slide(diffX){
+		if(that.pageIsMove||that.page360IsPlay){
+			return;
+		}
+		var curPage = that.pageList.eq(that.curPageIndex),
+			slideImgList = curPage.find('div[slideImg="true"]'),
+			slideLength  = slideImgList.length,
+		    curShowIndex = Number(curPage.attr('curShowIndex')),
+		    targetIndex  = 0,
+		    targetDiv = null;
+
+		//page360IsPlay
+		if(diffX>0){
+			targetIndex = curShowIndex - 1;
+			if(targetIndex === -1){
+				targetIndex = slideLength-1;
+			}
+		}else{   // to left,show next image
+			targetIndex = curShowIndex + 1;
+			if(targetIndex === slideLength){
+				targetIndex = 0;
+			}
+		}
+		that.pageIsMove = true;
+		targetDiv = slideImgList.eq(targetIndex);
+		targetDiv.addClass('zIndex100 opacity0 toShow');
 	}
 
 	//左右滑动图片
@@ -1060,7 +1119,7 @@ app.fn.PageContent = function(){
 		}  
 	}
 
-	function gallerySlide(diffX){
+	function pageGallerySlide(diffX){
 		var tipImg = that.pageList.eq(that.curPageIndex).find('div[tipImg="true"]'),
 		    tipImgState = tipImg.attr('state');
 		//往右,收缩侧栏
@@ -1128,40 +1187,123 @@ app.fn.PageContent = function(){
 
 		that.curPageType = pageType;
 		initNextPage(nextIndex,curPage,nextPage,pageType);
-		//"common","gallery","360","slide","album","video"
+		//"common","gallery","360","slide","album","video","map"
 
+		clearCurPage(curPage,curPage.attr('type'));
+		//页面切换
 		if(/120%/.test(effect)){
 			nextPage.addClass('bigSize120 opacity0').show().addClass('toOpacity100fast');
 		}else if(/fade/.test(effect)){
 			nextPage.addClass('opacity0').show().addClass('toOpacity100');
 		}
 
+		//内页动画
 		if( (pageType === 'common' || pageType === 'gallery') && innerBoxs.length>0 ) {
 			innerBoxsAnimate(innerBoxs,nextPage,pageType);
+			//简单暴力的回调1
+			setTimeout(function(){
+				
+			},1200);
 		}else{
 			if(effect==='120%'){
 				showPageTime = 2000;
 			}
+			//callback, 页面切换后的callback
+			//简单暴力的回调2
 			setTimeout(function(){
 				that.pageIsMove = false;
-			},showPageTime);
+				
+				//"360","slide","album","video","map"
+				switch(pageType){
+					case '360':
+					show360ImgAnimate(nextPage);
+					break;
 
-			if(pageType === '360'){
-				show360Page(nextPage);
-			}
+					case 'slide':
+					initSlidePage(nextPage);
+					break;
+				}
+				
+			},showPageTime);
 		}
 	}
 
+	function clearCurPage(curPage,pageType){
+		switch(pageType){
+			case '360':
+			clear360Page(curPage);
+			break;
+
+			case 'slide':
+			clearSlidePage(curPage);
+			break;
+		}
+	}
+
+
+	function initSlidePage(nextPage){
+		if(that.slidePageInit){
+			return;
+		}
+		var divList = nextPage.find('.likePageBox');
+		nextPage.attr('curShowIndex','0');
+		setCssEvt(divList,function($element){
+			if($element.hasClass('toShow')){
+				$element.parent().find('.zIndex11').removeClass('zIndex11').end().attr('curShowIndex',$element.attr('index'));
+				$element.removeClass('opacity0 toShow zIndex100').addClass('zIndex11');
+				that.pageIsMove = false;
+			}
+		});
+		that.slidePageInit = true;
+	}
+
 	//显示360°图片
-	function show360Page(nextPage){
+	function show360ImgAnimate(nextPage){
+		var imgList  = nextPage.find('div[slideImg="true"]'),
+			curShowIndex = 0;
+		nextPage.attr('curShowIndex',0);
+		that.page360IsPlay = true;
+
+		curShowImg = imgList.eq(curShowIndex);
+		setCssEvt(imgList,function($element){
+			if($element.hasClass('toShow')){
+				$element.parent().find('.zIndex11').removeClass('zIndex11').end().attr('curShowIndex',$element.attr('index'));
+				$element.removeClass('opacity0 toShow zIndex100').addClass('zIndex11');
+				that.pageIsMove = false;
+			}
+		});
+
+		var playImg = function(imgTimeDelay){
+			var playImgDelay  = imgTimeDelay?imgTimeDelay:2000;
+			that.page360Timer = setTimeout(function(){
+				curShowIndex++;
+				curShowImg = imgList.eq(curShowIndex);
+				curShowImg.addClass('zIndex100 opacity0 toShow');
+				if(curShowIndex < imgList.length-1){
+					playImg(2900);
+				}else{
+					that.page360IsPlay = false;
+				}
+			},2000);
+		}
+		playImg();
+	}
+
+	function clear360Page(curPage){
+		clearTimeout(that.page360Timer);
 		setTimeout(function(){
-			
+			curPage.attr('curShowIndex','0').addClass('disNone').find('.zIndex11').removeClass('zIndex11');
+		},1000);
+	}
+
+	function clearSlidePage(curPage){
+		setTimeout(function(){
+			curPage.attr('curShowIndex','0').addClass('disNone').find('.zIndex11').removeClass('zIndex11');
 		},1000);
 	}
 
 	function innerBoxsAnimate(innerBoxs,nextPage,pageType){
 		that.pageIsMove = true;
-
 		if(pageType === 'gallery'){
 			//pageType
 			var tipImg  = nextPage.find('div[tipImg="true"]');
@@ -1192,8 +1334,6 @@ app.fn.PageContent = function(){
 			page0.addClass('toSize100');
 		}
 	}
-
-
 
 	function arrowEvt(){
 		that.arrow = that.pageContent.find('#arrow');

@@ -135,15 +135,48 @@ var app = {
     	},
     	{
     		"type":"360",
-    		"imgList":["360/1_1.jpg","360/1_2.jpg","360/1_3.jpg","360/1_4.jpg","360/1_5.jpg","360/1_6.jpg","360/1_7.jpg","360/1_8.jpg"]
+    		"animateImgs":[
+                 {'src':"360/1_1.jpg"},
+                 {'src':"360/1_2.jpg"},
+                 {'src':"360/1_3.jpg"},
+
+                 {'src':"360/1_4.jpg"},
+                 {'src':"360/1_5.jpg"},
+                 {'src':"360/1_6.jpg"},
+
+                 {'src':"360/1_7.jpg"},
+                 {'src':"360/1_8.jpg"}
+             ]
     	},
     	{
     		"type":"slide",
-    		"imgList":["slide/1_1.jpg","slide/1_2.jpg","slide/1_3.jpg","slide/1_4.jpg","slide/1_5.jpg","slide/1_6.jpg","slide/1_7.jpg","slide/1_8.jpg"]
+    		"animateImgs":[
+                 {'src':"slide/1_1.jpg"},
+                 {'src':"slide/1_2.jpg"},
+                 {'src':"slide/1_3.jpg"},
+
+                 {'src':"slide/1_4.jpg"},
+                 {'src':"slide/1_5.jpg"},
+                 {'src':"slide/1_6.jpg"},
+
+                 {'src':"slide/1_7.jpg"},
+                 {'src':"slide/1_8.jpg"}
+            ]
     	},
     	{
     		"type":"album",
-    		"imgList":["album/1_1.jpg","album/1_2.jpg","album/1_3.jpg","album/1_4.jpg","album/1_5.jpg","album/1_6.jpg","album/1_7.jpg","album/1_8.jpg"]
+            "animateImgs":[
+                 {'src':"album/1_1.jpg"},
+                 {'src':"album/1_2.jpg"},
+                 {'src':"album/1_3.jpg"},
+
+                 {'src':"album/1_4.jpg"},
+                 {'src':"album/1_5.jpg"},
+                 {'src':"album/1_6.jpg"},
+
+                 {'src':"album/1_7.jpg"},
+                 {'src':"album/1_8.jpg"}
+            ]
     	},
         {
         	"type": "map",
