@@ -8,9 +8,9 @@
   "music": {
     "hasMusic": true,
     "hasIcon": true,
-    "name": "templates/tpls/001/wind.mp3",
+    "name": "templates/tpls/001/bg.mp3",
     "iconPostion": "top-right",
-    "iconSrc": "templates/tpls/001/icon_music.png"
+    "isAutoPlay": true
   },
   "backgroundColor": "#FFFF00",
   "pageTitle": "我是页面标题",
@@ -38,21 +38,18 @@
           "from": "left",
           "position": "50%",
           "delayTime": 1000,
-          "imgName": "图层一.png",
           "src": "templates/tpls/001/common_1_1.png"
         },
         {
           "from": "top",
           "position": "60%",
           "delayTime": 2000,
-          "imgName": "图层二.png",
           "src": "templates/tpls/001/common_1_2.png"
         },
         {
           "from": "right",
           "position": "70%",
           "delayTime": 1000,
-          "imgName": "图层三.png",
           "src": "templates/tpls/001/common_1_3.png"
         }
       ]
@@ -71,21 +68,18 @@
           "from": "left",
           "position": "70%",
           "delayTime": 1000,
-          "imgName": "图层一.png",
           "src": "templates/tpls/001/gallery_2_1.png"
         },
         {
           "from": "top",
           "position": "80%",
           "delayTime": 2000,
-          "imgName": "图层二.png",
           "src": "templates/tpls/001/gallery_2_2.png"
         },
         {
           "from": "right",
           "position": "90%",
           "delayTime": 1000,
-          "imgName": "图层三.png",
           "src": "templates/tpls/001/gallery_2_3.png"
         }
       ]
@@ -94,44 +88,47 @@
       "index": "3",
       "name": "页面三",
       "type": "360",
-      "imgList": [
-        "templates/tpls/001/360_3_1.jpg",
-        "templates/tpls/001/360_3_2.jpg",
-        "templates/tpls/001/360_3_3.jpg",
-        "templates/tpls/001/360_3_4.jpg",
-        "templates/tpls/001/360_3_5.jpg",
-        "templates/tpls/001/360_3_6.jpg",
-        "templates/tpls/001/360_3_7.jpg",
-        "templates/tpls/001/360_3_8.jpg"
+      "size": "640*1008",
+      "animateImgs": [
+        {"src": "templates/tpls/001/360_3_1.jpg"},
+        {"src": "templates/tpls/001/360_3_2.jpg"},
+        {"src": "templates/tpls/001/360_3_3.jpg"},
+        {"src": "templates/tpls/001/360_3_4.jpg"},
+        {"src": "templates/tpls/001/360_3_5.jpg"},
+        {"src": "templates/tpls/001/360_3_6.jpg"},
+        {"src": "templates/tpls/001/360_3_7.jpg"},
+        {"src": "templates/tpls/001/360_3_8.jpg"}
       ]
     },
     {
       "index": "4",
       "name": "页面四",
       "type": "slide",
-      "imgList": [
-        "templates/tpls/001/slide_4_1.jpg",
-        "templates/tpls/001/slide_4_2.jpg",
-        "templates/tpls/001/slide_4_3.jpg",
-        "templates/tpls/001/slide_4_4.jpg",
-        "templates/tpls/001/slide_4_5.jpg",
-        "templates/tpls/001/slide_4_6.jpg",
-        "templates/tpls/001/slide_4_7.jpg",
-        "templates/tpls/001/slide_4_8.jpg"
+      "size": "640*1008",
+      "animateImgs": [
+        {"src": "templates/tpls/001/slide_4_1.jpg"},
+        {"src": "templates/tpls/001/slide_4_2.jpg"},
+        {"src": "templates/tpls/001/slide_4_3.jpg"},
+        {"src": "templates/tpls/001/slide_4_4.jpg"},
+        {"src": "templates/tpls/001/slide_4_5.jpg"},
+        {"src": "templates/tpls/001/slide_4_6.jpg"},
+        {"src": "templates/tpls/001/slide_4_7.jpg"},
+        {"src": "templates/tpls/001/slide_4_8.jpg"}
       ]
     },
     {
       "index": "5",
       "name": "页面五",
       "type": "album",
-      "imgList": [
-        "templates/tpls/001/album_5_1.jpg",
-        "templates/tpls/001/album_5_2.jpg",
-        "templates/tpls/001/album_5_3.jpg",
-        "templates/tpls/001/album_5_4.jpg",
-        "templates/tpls/001/album_5_5.jpg",
-        "templates/tpls/001/album_5_6.jpg",
-        "templates/tpls/001/album_5_7.jpg"
+      "size": "640*1008",
+      "animateImgs": [
+        {"src": "templates/tpls/001/album_5_1.jpg"},
+        {"src": "templates/tpls/001/album_5_2.jpg"},
+        {"src": "templates/tpls/001/album_5_3.jpg"},
+        {"src": "templates/tpls/001/album_5_4.jpg"},
+        {"src": "templates/tpls/001/album_5_5.jpg"},
+        {"src": "templates/tpls/001/album_5_6.jpg"},
+        {"src": "templates/tpls/001/album_5_7.jpg"}
       ]
     },
     {

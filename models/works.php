@@ -20,6 +20,7 @@ function getWorksById($worksId) {
 
 	mysql_free_result($result);
 	$row["pages"] = json_decode($row["pages"]);
+	$row["music"] = json_decode($row["music"]);
 	return $row;
 }
 
@@ -33,7 +34,10 @@ function initWorks($works) {
 	// print_r($user);
 	if($user) {
 		$jsonStr = convertChar($works);
-		$sql = "INSERT INTO works (name, author, thumb, userId, originBy, pages) values ('$works->name', '$user->name', '$works->thumb', '$user->userId', '$works->tplId', '$jsonStr')";
+		$music = json_encode($works->music);
+		$url = substr(base64_encode(rand(0,9999).time()), 0, 10);
+		$sql = "INSERT INTO works (name, author, thumb, userId, originBy, pages, music, backgroundColor, pageTitle, pageDescribe, shareImage, url) values (".
+			"'$works->name', '$user->name', '$works->thumb', '$user->userId', '$works->tplId', '$jsonStr', '$music', '$works->backgroundColor', '$works->pageTitle', '$works->pageDescribe', '$works->shareImage', '$url')";
 		mysql_query($sql);
 		$ret = mysql_insert_id();
 	}
@@ -62,6 +66,22 @@ function updateWorks($works) {
 		// $jsonStr = json_encode($works->pages);
 		$sql .= "pages = '$jsonStr', ";
 	}
+	if($works->music) {
+		$music = json_encode($works->music);
+		$sql .= "music = '$music', ";
+	}
+	if($works->pageTitle) {
+		$sql .= "pageTitle = '$works->pageTitle', ";
+	}
+	if($works->pageDescribe) {
+		$sql .= "pageDescribe = '$works->pageDescribe', ";
+	}
+	if($works->backgroundColor) {
+		$sql .= "backgroundColor = '$works->backgroundColor', ";
+	}
+	if($works->shareImage) {
+		$sql .= "shareImage = '$works->shareImage', ";
+	}
 	$sql .= "lastModify='$mysqltime' WHERE id = '$works->id'";
 	// echo $sql;
 	$ret = mysql_query($sql);
@@ -89,6 +109,9 @@ function convertChar($works) {
     	}
     	if($item->imgTipName) {
     		$item->imgTipName = urlencode($item->imgTipName);
+    	}
+    	if($item->address) {
+    		$item->address = urlencode($item->address);
     	}
         
         if($item->animateImgs) {

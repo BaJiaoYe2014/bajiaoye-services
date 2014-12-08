@@ -3,6 +3,7 @@
 require 'models/works.php';
 require 'models/template.php';
 require 'models/file-manager.php';
+require 'models/upload.php';
 // require 'models/test.php';
 // $a = json_decode($test);
 // $r = refactorWorks($a, '67');
@@ -16,6 +17,11 @@ $app->get('/userOpus/:userId', 'middleware', function ($userId) {
 
 $app->get('/opus/:worksId', 'middleware', function ($worksId) {
 	$result = getWorksById($worksId);
+	echo json_encode($result);
+});
+
+$app->get('/showWorks/:worksId', 'middleware', function ($worksId) {
+	$result = getShowWorks($worksId);
 	echo json_encode($result);
 });
 
@@ -37,7 +43,8 @@ $app->post('/opusCreate', 'middleware', function () use ($app) {
 		// print_r($reWorks);
 		$res = updateWorks($reWorks);
 		if($res) {
-			completeCopyWorks($works->id, $works->userId);
+			$obj = getShowWorks($works->id);
+			completeCopyWorks($works->id, $works->userId, $obj, $works->url);
 		}
 	}
 	echo json_encode($result);
@@ -51,10 +58,13 @@ $app->post('/opusUpdate', 'middleware', function () use ($app) {
 	$jsonObj = arrayToObejct($jsonObj);
 
 	copyWorksImagesToTmp($jsonObj);
+	// print_r($jsonObj);
 	$reWorks = refactorWorks($jsonObj, $jsonObj->id);
+	// print_r($reWorks);
 	$result = updateWorks($reWorks);
 	if($result) {
-		completeCopyWorks($jsonObj->id, $jsonObj->userId);
+		$obj = getShowWorks($jsonObj->id);
+		completeCopyWorks($jsonObj->id, $jsonObj->userId, $obj, $jsonObj->url);
 	}
 	echo json_encode($result);
 });
@@ -73,6 +83,14 @@ $app->get('/tplList', 'middleware', function () {
 $app->get('/tpl/:tplId', 'middleware', function ($tplId) {
 	$result = getTemplateById($tplId);
 	echo $result;
+});
+
+$app->post('/fileUpload', function () use ($app) {
+	$request = $app->request;
+	$params = $request->post();
+    $result = filesUpload($params['userId']);
+    echo $result;
+
 });
 
 
@@ -100,6 +118,62 @@ function arrayToObejct($works) {
 	}
 	$works->pages = $temp;
 	return $works;
+}
+
+function replaceImgPath($src) {
+	$arr = explode('/', $src);
+	$len = count($arr) - 1;
+	return $arr[$len];
+}
+
+function getShowWorks($worksId) {
+	$ret = array();
+	$result = getWorksById($worksId);
+	// print_r($result);
+	$basic = array();
+	$basic['pageTitle'] = $result['pageTitle'];
+	$basic['pageDescribe'] = $result['pageDescribe'];
+	$basic['shareImage'] = replaceImgPath($result['shareImage']);
+	$music = $result['music'];
+	$music->name = replaceImgPath($result['music']->name);
+	$basic['music'] = $music;
+	$ret['global'] = $basic;
+	$startObj = $result['pages'][0];
+	$startObj->clickImg = replaceImgPath($startObj->clickImg);
+	$ret['startAnimate'] = $startObj;
+	$content = array();
+	foreach ($result['pages'] as $key => $value) {
+		if($key === 0) continue;
+		if($value->background) {
+			$value->background = replaceImgPath($value->background);
+		}
+		if($value->tipImg) {
+			$value->tipImg = replaceImgPath($value->tipImg);
+		}
+		if($value->button) {
+			$value->button = replaceImgPath($value->button);
+		}
+		if($value->videoScreenshot) {
+			$value->videoScreenshot = replaceImgPath($value->videoScreenshot);
+		}
+		if($value->videoButton) {
+			$value->videoButton = replaceImgPath($value->videoButton);
+		}
+
+		if($value->animateImgs) {
+			$item = $value->animateImgs;
+			for($i=0; $i<count($item); $i++) {
+				if($item[$i]->src) {
+					$item[$i]->src = replaceImgPath($item[$i]->src);
+				}
+			}
+			$value->animateImgs = $item;
+		}
+		$content[] = $value;
+	}
+	$ret['contentPageList'] = $content;
+	// print_r($ret);
+	return $ret;
 }
 
 ?>

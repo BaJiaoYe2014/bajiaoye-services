@@ -13,8 +13,8 @@ function copyWorksImagesToTmp($works) {
 	if(!file_exists($tmpPath)) {
 		mkdir($tmpPath, 0777, true);
 	}else{
-		delete_directory($tmpPath); // make sure pure images, remove unused images
-		mkdir($tmpPath, 0777, true);
+		//delete_directory($tmpPath); // make sure pure images, remove unused images
+		//mkdir($tmpPath, 0777, true);
 	}
 	$result = travelWorksImages($works);
 	// print_r($result);
@@ -27,16 +27,53 @@ function copyWorksImagesToTmp($works) {
 }
 
 // from tmp to works dir.
-function completeCopyWorks($worksId, $userId) {
-	$from = 'tmp/'.$userId.'/';
-	$dest = 'works/'.$worksId.'/images/';
+function completeCopyWorks($worksId, $userId, $obj, $url) {
+	$from = 'tmp/'.$userId;
+	$dest = 'works/'.$worksId.'/images';
+	$destJs = 'works/'.$worksId.'/js';
+	$destCss = 'works/'.$worksId.'/css';
+	$cssPath = 'works/v1/css';
+	$jsPath = 'works/v1/js';
+	$imgPath = 'works/v1/images';
 	if(!file_exists($dest)) {
 		mkdir($dest, 0777, true);
 	}
 	if(file_exists($from)) {
 		copyDirFiles($from, $dest);
+		copyDirFiles($imgPath, $dest);
 		delete_directory($from);
 	}
+	// js dir
+	if(!file_exists($destJs)) {
+		mkdir($destJs, 0777, true);
+	}
+	if(file_exists($jsPath)) {
+		copyDirFiles($jsPath, $destJs);
+	}
+	//css dir
+	if(!file_exists($destCss)) {
+		mkdir($destCss, 0777, true);
+	}
+	if(file_exists($cssPath)) {
+		copyDirFiles($cssPath, $destCss);
+	}
+	// change index name to random name
+	copy('works/v1/index.html', 'works/'.$worksId.'/'.$url.'.html');
+	// update config.js
+	updateConfigJs($obj, $worksId);
+
+}
+
+function updateConfigJs($obj, $worksId) {
+	$jsonStr = json_encode($obj);
+	$str = "var app=".$jsonStr;
+	$fileName = 'works/'.$worksId.'/js/config.js';
+	if(!file_exists($fileName)) {
+		mkdir($fileName, 0777, true);
+	}
+	$fh = fopen($fileName, "w");
+	fwrite($fh, $str);
+	fclose($fh);
 }
 
 function travelWorksImages($works) {
@@ -54,6 +91,7 @@ function travelWorksImages($works) {
 	}
 	// print_r($works);
 	if($works->music) {
+		// print_r($works);
 		foreach ($works->music as $key => $value) {
 			if(getValidValues($key, $value)){//value is valid
 				if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
@@ -115,7 +153,7 @@ function copyDirFiles($from, $dest) {
 		while(false !== ($fileName = readdir($handle))) {
 			$fullName = $from.'/'.$fileName;
 			if(!is_file($fullName)) continue;
-			$exts = array('jpg','png','mp3','gif');
+			$exts = array('jpg','png','mp3','gif', 'js', 'css');
 			$info = pathinfo($fullName);
 			if(in_array($info['extension'], $exts)) {
 				copy($fullName, $dest.'/'.$fileName);
