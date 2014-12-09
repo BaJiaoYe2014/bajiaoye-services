@@ -4,7 +4,7 @@
 //Get all of the works
 function getAllWorksByUserId($userId) {
 	$result = mysql_query("SELECT * FROM works where userId = $userId");
-	$ret = [];
+	$ret = array();
 	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
 	    array_push($ret, $row);
 	}
