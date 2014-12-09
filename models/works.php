@@ -50,36 +50,36 @@ function updateWorks($works) {
 	$phptime = time();
 	$mysqltime=date('Y-m-d H:i:s',$phptime);
 	$sql = "UPDATE works SET ";
-	if($works->name) {
+	if(!empty($works->name)) {
 		$sql .= "name = '$works->name', ";
 	}
-	if($works->author) {
+	if(!empty($works->author)) {
 		$sql .= "author = '$works->author', ";
 	}
-	if($works->thumb) {
+	if(!empty($works->thumb)) {
 		$sql .= "thumb = '$works->thumb', ";
 	}
-	if($works->url) {
+	if(!empty($works->url)) {
 		$sql .= "url = '$works->url', ";
 	}
-	if($works->pages) {
+	if(!empty($works->pages)) {
 		// $jsonStr = json_encode($works->pages);
 		$sql .= "pages = '$jsonStr', ";
 	}
-	if($works->music) {
+	if(!empty($works->music)) {
 		$music = json_encode($works->music);
 		$sql .= "music = '$music', ";
 	}
-	if($works->pageTitle) {
+	if(!empty($works->pageTitle)) {
 		$sql .= "pageTitle = '$works->pageTitle', ";
 	}
-	if($works->pageDescribe) {
+	if(!empty($works->pageDescribe)) {
 		$sql .= "pageDescribe = '$works->pageDescribe', ";
 	}
-	if($works->backgroundColor) {
+	if(!empty($works->backgroundColor)) {
 		$sql .= "backgroundColor = '$works->backgroundColor', ";
 	}
-	if($works->shareImage) {
+	if(!empty($works->shareImage)) {
 		$sql .= "shareImage = '$works->shareImage', ";
 	}
 	$sql .= "lastModify='$mysqltime' WHERE id = '$works->id'";
@@ -101,26 +101,26 @@ function convertChar($works) {
 	$pages = array();
     foreach ( $works->pages as $item ) {
     	// print_r($item);
-    	if($item->name) {
+    	if(!empty($item->name)) {
     		$item->name = urlencode($item->name);
     	}
-    	if($item->imgName) {
+    	if(!empty($item->imgName)) {
     		$item->imgName = urlencode($item->imgName);
     	}
-    	if($item->imgTipName) {
+    	if(!empty($item->imgTipName)) {
     		$item->imgTipName = urlencode($item->imgTipName);
     	}
-    	if($item->address) {
+    	if(!empty($item->address)) {
     		$item->address = urlencode($item->address);
     	}
         
-        if($item->animateImgs) {
+        if(!empty($item->animateImgs)) {
         	$elements = array();
 	        foreach($item->animateImgs as $ele) {
-	        	if($ele->name) {
+	        	if(!empty($ele->name)) {
 	        		$ele->name = urlencode($ele->name);
 	        	}
-	        	if($ele->imgName) {
+	        	if(!empty($ele->imgName)) {
 	        		$ele->imgName = urlencode($ele->imgName);
 	        	}
 	        	
@@ -145,7 +145,7 @@ function refactorWorks($works, $worksId) {
 			}
 		}
 	}
-	if($works->music) {
+	if(!empty($works->music)) {
 		foreach ($works->music as $key => $value) {
 			if(getValidValues($key, $value)){//value is valid
 				if(strrpos($value, "works/") === false){

@@ -106,7 +106,7 @@ function arrayToObejct($works) {
 	$temp = array();
 	foreach ($works->pages as $item) {
 		$item = (object) $item;
-		if($item->animateImgs) {
+		if(!empty($item->animateImgs)) {
 			$ele = array();
 			foreach ($item->animateImgs as $value) {
 				$value = (object) $value;
@@ -144,23 +144,23 @@ function getShowWorks($worksId) {
 	$content = array();
 	foreach ($result['pages'] as $key => $value) {
 		if($key === 0) continue;
-		if($value->background) {
+		if(!empty($value->background)) {
 			$value->background = replaceImgPath($value->background);
 		}
-		if($value->tipImg) {
+		if(!empty($value->tipImg)) {
 			$value->tipImg = replaceImgPath($value->tipImg);
 		}
-		if($value->button) {
+		if(!empty($value->button)) {
 			$value->button = replaceImgPath($value->button);
 		}
-		if($value->videoScreenshot) {
+		if(!empty($value->videoScreenshot)) {
 			$value->videoScreenshot = replaceImgPath($value->videoScreenshot);
 		}
-		if($value->videoButton) {
+		if(!empty($value->videoButton)) {
 			$value->videoButton = replaceImgPath($value->videoButton);
 		}
 
-		if($value->animateImgs) {
+		if(!empty($value->animateImgs)) {
 			$item = $value->animateImgs;
 			for($i=0; $i<count($item); $i++) {
 				if($item[$i]->src) {

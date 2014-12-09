@@ -90,7 +90,7 @@ function travelWorksImages($works) {
 		}
 	}
 	// print_r($works);
-	if($works->music) {
+	if(!empty($works->music)) {
 		// print_r($works);
 		foreach ($works->music as $key => $value) {
 			if(getValidValues($key, $value)){//value is valid
