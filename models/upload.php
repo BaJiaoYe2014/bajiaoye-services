@@ -21,7 +21,11 @@ function filesUpload($userId) {
         }
 
         //获得文件扩展名
-        $temp_arr = explode(".", $_FILES["file"]["name"]);
+        $displayName = $_FILES["file"]["name"];
+        $doubleName = explode(";", $displayName);
+        $temp_arr = explode(".", $doubleName[0]);
+        $temp_arr1 = explode(".", $doubleName[0]);
+        $temp_arr2 = explode(".", $doubleName[1]);
         $file_ext = array_pop($temp_arr);
         $file_ext = trim($file_ext);
         $file_ext = strtolower($file_ext);
@@ -30,7 +34,8 @@ function filesUpload($userId) {
             exit("上传文件扩展名是不允许的扩展名。");
         }
         //以时间戳重命名文件
-        $new_name = $_FILES["file"]["name"];
+        // $new_name = $_FILES["file"]["name"];
+        $new_name = $temp_arr2[0].'.'.$temp_arr1[1];
         //将文件移动到存储目录下
         move_uploaded_file($_FILES["file"]["tmp_name"],"$file_path" . $new_name);
         //向数据表写入文件存储信息以便管理
