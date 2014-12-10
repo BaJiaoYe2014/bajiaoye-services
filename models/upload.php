@@ -13,6 +13,7 @@ function filesUpload($userId) {
     // print_r($_FILES);
     if (empty($_FILES) === false) {
         //判断检查
+        $photo_up_size = $_FILES["file"]["size"];
         if($photo_up_size > 2097152){
             exit("对不起，您上传的照片超过了2M。");
         }
