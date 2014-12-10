@@ -7,41 +7,5 @@
     "typeId": "activity",
     "typeName": "会议活动",
     "url": "http://demo.com/spark"
-  },
-  {
-    "id": "002",
-    "name": "模版二",
-    "author": "芭蕉叶",
-    "thumb": "templates/tpls/001/thumb.jpg",
-    "typeId": "activity",
-    "typeName": "会议活动",
-    "url": "http://demo.com/spark"
-  },
-  {
-    "id": "003",
-    "name": "模版三",
-    "author": "芭蕉叶",
-    "thumb": "templates/tpls/001/thumb.jpg",
-    "typeId": "activity",
-    "typeName": "会议活动",
-    "url": "http://demo.com/spark"
-  },
-  {
-    "id": "004",
-    "name": "模版四",
-    "author": "芭蕉叶",
-    "thumb": "templates/tpls/001/thumb.jpg",
-    "typeId": "brand",
-    "typeName": "品牌形象",
-    "url": "http://demo.com/spark"
-  },
-  {
-    "id": "005",
-    "name": "模版五",
-    "author": "芭蕉叶",
-    "thumb": "templates/tpls/001/thumb.jpg",
-    "typeId": "brand",
-    "typeName": "品牌形象",
-    "url": "http://demo.com/spark"
   }
 ]
