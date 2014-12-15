@@ -85,6 +85,16 @@ $app->get('/tpl/:tplId', 'middleware', function ($tplId) {
 	echo $result;
 });
 
+$app->get('/styleList/:type', 'middleware', function ($type) {
+	$result = getTemplateStyleList($type);
+	echo $result;
+});
+
+$app->get('/style/:styleId', 'middleware', function ($styleId) {
+	$result = getTemplateStyleById($styleId);
+	echo $result;
+});
+
 $app->post('/fileUpload', function () use ($app) {
 	$request = $app->request;
 	$params = $request->post();

@@ -157,11 +157,16 @@ function refactorWorks($works, $worksId) {
 	}
 	$temp = array();
 	// $works->pages = (object) $works->pages;
-	foreach ($works->pages as $item) {
+	foreach ($works->pages as $j=>$item) {
 		foreach ($item as $k => $v) {
 			if(getValidValues($k, $v)){//value is valid
 				if(strrpos($v, "works/") === false){
-					$fullName = getNewName($worksId, $v);
+					if(strrpos($v, "styles/") === false) {
+						$fullName = getNewName($worksId, $v);
+					}else{
+						$fullName = getStyleNewName($worksId, $v, $item->type, $j);
+					}
+					
 					$item->$k = $fullName;
 				}
 			}
@@ -171,7 +176,11 @@ function refactorWorks($works, $worksId) {
 					foreach ($a as $key => $value) {
 						if(getValidValues($key, $value)){//value is valid
 							if(strrpos($value, "works/") === false){
-								$fullName = getNewName($worksId, $value);
+								if(strrpos($value, "styles/") === false) {
+									$fullName = getNewName($worksId, $value);
+								}else{
+									$fullName = getStyleNewName($worksId, $value, $item->type, $j);
+								}
 								$a->$key = $fullName;
 							}
 						}
@@ -205,6 +214,16 @@ function getNewName($worksId,$value) {
 	$arr = explode('/', $value);
 	$last = count($arr) - 1;
 	$fullName = $replacePath.$arr[$last];
+	// $works->$key = $fullName;
+	return $fullName;
+}
+
+function getStyleNewName($worksId,$value, $type, $num) {
+	$replacePath = 'works/'.$worksId.'/images/';
+	
+	$arr = explode('/', $value);
+	$last = count($arr) - 1;
+	$fullName = $replacePath.$type.'_'.$num.'_'.$arr[$last];
 	// $works->$key = $fullName;
 	return $fullName;
 }

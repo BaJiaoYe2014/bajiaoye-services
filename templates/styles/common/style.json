@@ -1,0 +1,31 @@
+{
+  "name": "样式一",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/common/thumb.jpg",
+  "type": "common",
+  "category": "content",
+  "size": "640*1008",
+  "imgName": "背景.jpg",
+  "background": "templates/styles/common/bg.jpg",
+  "effect": "120%",
+  "animateImgs": [
+    {
+      "from": "left",
+      "position": "50%",
+      "delayTime": 1000,
+      "src": "templates/styles/common/1.jpg"
+    },
+    {
+      "from": "top",
+      "position": "60%",
+      "delayTime": 2000,
+      "src": "templates/styles/common/2.png"
+    },
+    {
+      "from": "right",
+      "position": "70%",
+      "delayTime": 1000,
+      "src": "templates/styles/common/3.png"
+    }
+  ]
+}

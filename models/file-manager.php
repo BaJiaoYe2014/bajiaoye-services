@@ -22,7 +22,20 @@ function copyWorksImagesToTmp($works) {
 		$arr = explode('/', $item);
 		$last = count($arr)-1;
 		$fileName = $arr[$last];
-		copy($item, $tmpPath.'/'.$fileName);
+		if(strrpos($item, "styles/")<0) {
+			copy($item, $tmpPath.$fileName);
+		}else{
+			$tmpArr = explode('_', $item);
+			$l = count($tmpArr)-1;
+			$name = $tmpArr[$l];
+			$fromPath = '';
+			for($i=0; $i<count($arr)-1; $i++) {
+				$fromPath .= $arr[$i] . '/';
+			}
+			// echo $fromPath.$name.'to:'.$tmpPath.'/'.$fileName.'<br/>';
+			copy($fromPath.$name, $tmpPath.$fileName);
+		}
+		
 	}
 }
 
@@ -100,19 +113,38 @@ function travelWorksImages($works) {
 			}
 		}
 	}
-	foreach ($works->pages as $item) {
+	foreach ($works->pages as $j=>$item) {
 		foreach ($item as $k => $v) {
 			if(getValidValues($k, $v)){//value is valid
-				if(strrpos($v, "tmp/") === false  && strrpos($v, "works/") === false){
+				if(strrpos($v, "tmp/") === false  && strrpos($v, "works/") === false && strrpos($v, "styles/") === false){
 					$ret[] = $v;
+				}
+				if(strrpos($v, "styles/")>0) {
+					$tmpArr = explode('/', $v);
+					$l = count($tmpArr)-1;
+					$name = $tmpArr[$l];
+					for($i=0; $i<count($tmpArr)-1; $i++) {
+						$fromPath .= $tmpArr[$i] . '/';
+					}
+					$ret[] = $fromPath.$item->type.'_'.$j.'_'.$name;
 				}
 			}
 			if($k == 'animateImgs') {
 				foreach ($v as $a) {
 					foreach ($a as $key => $value) {
 						if(getValidValues($key, $value)){//value is valid
-							if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+							if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false && strrpos($value, "styles/") === false){
 								$ret[] = $value;
+							}
+							if(strrpos($value, "styles/")>0) {
+								$tmpArr = explode('/', $value);
+								$l = count($tmpArr)-1;
+								$name = $tmpArr[$l];
+								$fromPath = '';
+								for($i=0; $i<count($tmpArr)-1; $i++) {
+									$fromPath .= $tmpArr[$i] . '/';
+								}
+								$ret[] = $fromPath.$item->type.'_'.$j.'_'.$name;
 							}
 						}
 					}

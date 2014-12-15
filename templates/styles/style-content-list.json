@@ -1,0 +1,18 @@
+[
+  {
+  	"id": "common",
+    "name": "样式一",
+    "author": "芭蕉叶",
+    "type": "common",
+    "category": "content",
+    "thumb": "templates/styles/common/thumb.jpg"
+  },
+  {
+  	"id": "gallery",
+    "name": "样式二",
+    "author": "芭蕉叶",
+    "type": "gallery",
+    "category": "content",
+    "thumb": "templates/styles/common/thumb.jpg"
+  }
+]
