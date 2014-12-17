@@ -22,7 +22,7 @@ function copyWorksImagesToTmp($works) {
 		$arr = explode('/', $item);
 		$last = count($arr)-1;
 		$fileName = $arr[$last];
-		if(strrpos($item, "styles/")<0) {
+		if(strrpos($item, "styles/")===false) {
 			copy($item, $tmpPath.$fileName);
 		}else{
 			$tmpArr = explode('_', $item);
