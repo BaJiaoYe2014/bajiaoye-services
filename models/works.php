@@ -37,7 +37,7 @@ function initWorks($works) {
 		$music = json_encode($works->music);
 		$url = substr(base64_encode(rand(0,9999).time()), 0, 10);
 		$sql = "INSERT INTO works (name, author, thumb, userId, originBy, pages, music, backgroundColor, pageTitle, pageDescribe, shareImage, url) values (".
-			"'$works->name', '$user->name', '$works->thumb', '$user->userId', '$works->tplId', '$jsonStr', '$music', '$works->backgroundColor', '$works->pageTitle', '$works->pageDescribe', '$works->shareImage', '$url')";
+			"'$works->name', '$user->name', '$works->thumb', '$user->userId', '$works->originBy', '$jsonStr', '$music', '$works->backgroundColor', '$works->pageTitle', '$works->pageDescribe', '$works->shareImage', '$url')";
 		mysql_query($sql);
 		$ret = mysql_insert_id();
 	}
