@@ -139,7 +139,7 @@ function refactorWorks($works, $worksId) {
 	// print_r($works);
 	foreach ($works as $key => $value) {
 		if(getValidValues($key, $value)){//value is valid
-			if(strrpos($value, "works/") === false){
+			if(strrpos($value, "works/".$worksId) === false){
 				$fullName = getNewName($worksId, $value);
 				$works->$key = $fullName;
 			}
@@ -148,7 +148,7 @@ function refactorWorks($works, $worksId) {
 	if(!empty($works->music)) {
 		foreach ($works->music as $key => $value) {
 			if(getValidValues($key, $value)){//value is valid
-				if(strrpos($value, "works/") === false){
+				if(strrpos($value, "works/".$worksId) === false){
 					$fullName = getNewName($worksId, $value);
 					$works->music->$key = $fullName;
 				}
@@ -160,7 +160,7 @@ function refactorWorks($works, $worksId) {
 	foreach ($works->pages as $j=>$item) {
 		foreach ($item as $k => $v) {
 			if(getValidValues($k, $v)){//value is valid
-				if(strrpos($v, "works/") === false){
+				if(strrpos($v, "works/".$worksId) === false){
 					if(strrpos($v, "styles/") === false) {
 						$fullName = getNewName($worksId, $v);
 					}else{
@@ -175,7 +175,7 @@ function refactorWorks($works, $worksId) {
 				foreach ($v as $a) {
 					foreach ($a as $key => $value) {
 						if(getValidValues($key, $value)){//value is valid
-							if(strrpos($value, "works/") === false){
+							if(strrpos($value, "works/".$worksId) === false){
 								if(strrpos($value, "styles/") === false) {
 									$fullName = getNewName($worksId, $value);
 								}else{
@@ -193,7 +193,7 @@ function refactorWorks($works, $worksId) {
 				$imgList = array();
 				foreach ($v as $key => $value) {
 					if(getValidValues($key+1, $value)){//value is valid
-						if(strrpos($value, "works/") === false){
+						if(strrpos($value, "works/".$worksId) === false){
 							$fullName = getNewName($worksId, $value);
 							$imgList[] = $fullName;
 						}

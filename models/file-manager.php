@@ -95,9 +95,10 @@ function travelWorksImages($works) {
 	// print_r($works);
 
 	// $works = (object) $works;
+	$worksId = $works->id;
 	foreach ($works as $key => $value) {
 		if(getValidValues($key, $value)){//value is valid
-			if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+			if(strrpos($value, "tmp/") === false  && strrpos($value, "works/".$worksId) === false){
 				$ret[] = $value;
 			}
 		}
@@ -107,7 +108,7 @@ function travelWorksImages($works) {
 		// print_r($works);
 		foreach ($works->music as $key => $value) {
 			if(getValidValues($key, $value)){//value is valid
-				if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+				if(strrpos($value, "tmp/") === false  && strrpos($value, "works/".$worksId) === false){
 					$ret[] = $value;
 				}
 			}
@@ -116,13 +117,14 @@ function travelWorksImages($works) {
 	foreach ($works->pages as $j=>$item) {
 		foreach ($item as $k => $v) {
 			if(getValidValues($k, $v)){//value is valid
-				if(strrpos($v, "tmp/") === false  && strrpos($v, "works/") === false && strrpos($v, "styles/") === false){
+				if(strrpos($v, "tmp/") === false  && strrpos($v, "works/".$worksId) === false && strrpos($v, "styles/") === false){
 					$ret[] = $v;
 				}
 				if(strrpos($v, "styles/")>0) {
 					$tmpArr = explode('/', $v);
 					$l = count($tmpArr)-1;
 					$name = $tmpArr[$l];
+					$fromPath = '';
 					for($i=0; $i<count($tmpArr)-1; $i++) {
 						$fromPath .= $tmpArr[$i] . '/';
 					}
@@ -133,7 +135,7 @@ function travelWorksImages($works) {
 				foreach ($v as $a) {
 					foreach ($a as $key => $value) {
 						if(getValidValues($key, $value)){//value is valid
-							if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false && strrpos($value, "styles/") === false){
+							if(strrpos($value, "tmp/") === false  && strrpos($value, "works/".$worksId) === false && strrpos($value, "styles/") === false){
 								$ret[] = $value;
 							}
 							if(strrpos($value, "styles/")>0) {
@@ -153,7 +155,7 @@ function travelWorksImages($works) {
 			if($k == 'imgList') {
 				foreach ($v as $key => $value) {
 					if(getValidValues($key+1, $value)){//value is valid
-						if(strrpos($value, "tmp/") === false  && strrpos($value, "works/") === false){
+						if(strrpos($value, "tmp/") === false  && strrpos($value, "works/".$worksId) === false){
 							$ret[] = $value;
 						}
 					}
