@@ -4,7 +4,7 @@
   "author": "芭蕉叶",
   "thumb": "templates/tpls/001/thumb.jpg",
   "type": "会议活动",
-  "url": "http://demo.com/spark",
+  "url": "works/188/NTc4NzE0MT.html",
   "music": {
     "hasMusic": true,
     "hasIcon": true,
@@ -33,21 +33,23 @@
       "effect": "120%",
       "animateImgs": [
         {
-          "from": "left",
-          "position": "50%",
+          "type": "fadeIn",
           "delayTime": 1000,
+          "motion": "fadeIn",
           "src": "templates/tpls/001/common_1_1.png"
         },
         {
-          "from": "top",
-          "position": "60%",
+          "type": "",
           "delayTime": 2000,
+          "motion": "",
           "src": "templates/tpls/001/common_1_2.png"
         },
         {
+          "type": "move",
           "from": "right",
-          "position": "70%",
+          "position": "50%",
           "delayTime": 1000,
+          "motion": "move-right-50%",
           "src": "templates/tpls/001/common_1_3.png"
         }
       ]
@@ -62,21 +64,23 @@
       "tipImg": "templates/tpls/001/gallery_2_side.jpg",
       "animateImgs": [
         {
-          "from": "left",
-          "position": "70%",
+          "type": "fadeIn",
           "delayTime": 1000,
+          "motion": "fadeIn",
           "src": "templates/tpls/001/gallery_2_1.png"
         },
         {
-          "from": "top",
-          "position": "80%",
+          "type": "",
           "delayTime": 2000,
+          "motion": "",
           "src": "templates/tpls/001/gallery_2_2.png"
         },
         {
+          "type": "move",
           "from": "right",
           "position": "90%",
           "delayTime": 1000,
+          "motion": "move-right-50%",
           "src": "templates/tpls/001/gallery_2_3.png"
         }
       ]
@@ -151,8 +155,7 @@
       "videoScreenshot": "templates/tpls/001/video_7_cover.png",
       "videoButton": "templates/tpls/001/video_7_btn.png",
       "verticalPosition": "600",
-      "videoUrl": "http://player.youku.com/embed/XNDk3MjMzMDY0",
-      "videoCode": "&lt;iframe height=498 width=510 src=&#39;http://player.youku.com/embed/XNDk3MjMzMDY0&#39; frameborder=0 allowfullscreen&gt;&lt;/iframe&gt;"
+      "videoUrl": "youku-XNDk3MjMzMDY0",
     }
   ]
 }
