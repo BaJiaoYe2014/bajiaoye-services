@@ -4,6 +4,8 @@ require 'models/works.php';
 require 'models/template.php';
 require 'models/file-manager.php';
 require 'models/upload.php';
+require 'models/user.php';
+
 // require 'models/test.php';
 // $a = json_decode($test);
 // $r = refactorWorks($a, '67');
@@ -104,12 +106,22 @@ $app->post('/fileUpload', function () use ($app) {
 });
 
 
-$app->get('/login', function () {
-    echo "Hello";
+$app->post('/login', 'middleware', function () use ($app) {
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	$result = loginWithPassword($jsonObj->email, $jsonObj->password);
+	echo json_encode($result);
 });
 
-$app->get('/foo', function () {
-    echo "Foowwwww!";
+$app->post('/register', 'middleware', function () use ($app) {
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	$result = addUser($jsonObj);
+	echo json_encode($result);
 });
 
 function arrayToObejct($works) {
