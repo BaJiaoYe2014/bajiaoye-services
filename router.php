@@ -124,6 +124,21 @@ $app->post('/register', 'middleware', function () use ($app) {
 	echo json_encode($result);
 });
 
+$app->get('/users/:userId', 'middleware', function ($userId) {
+	$result = getUserInfoById($userId);
+	echo json_encode($result);
+	// echo 123;
+});
+
+$app->post('/userUpdate', 'middleware', function () use ($app) {
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	$result = updateUser($jsonObj);
+	echo json_encode($result);
+});
+
 function arrayToObejct($works) {
 	$temp = array();
 	foreach ($works->pages as $item) {
