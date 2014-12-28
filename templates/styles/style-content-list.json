@@ -1,7 +1,7 @@
 [
   {
   	"id": "common",
-    "name": "样式一",
+    "name": "common",
     "author": "芭蕉叶",
     "type": "common",
     "category": "content",
@@ -9,10 +9,50 @@
   },
   {
   	"id": "gallery",
-    "name": "样式二",
+    "name": "gallery",
     "author": "芭蕉叶",
     "type": "gallery",
     "category": "content",
-    "thumb": "templates/styles/common/thumb.jpg"
+    "thumb": "templates/styles/gallery/thumb.jpg"
+  },
+  {
+    "id": "360",
+    "name": "360",
+    "author": "芭蕉叶",
+    "type": "360",
+    "category": "content",
+    "thumb": "templates/styles/360/thumb.jpg"
+  },
+  {
+    "id": "slide",
+    "name": "slide",
+    "author": "芭蕉叶",
+    "type": "slide",
+    "category": "content",
+    "thumb": "templates/styles/slide/thumb.jpg"
+  },
+  {
+    "id": "album",
+    "name": "album",
+    "author": "芭蕉叶",
+    "type": "album",
+    "category": "content",
+    "thumb": "templates/styles/album/thumb.jpg"
+  },
+  {
+    "id": "map",
+    "name": "map",
+    "author": "芭蕉叶",
+    "type": "map",
+    "category": "content",
+    "thumb": "templates/styles/map/thumb.jpg"
+  },
+  {
+    "id": "video",
+    "name": "video",
+    "author": "芭蕉叶",
+    "type": "video",
+    "category": "content",
+    "thumb": "templates/styles/video/thumb.jpg"
   }
 ]

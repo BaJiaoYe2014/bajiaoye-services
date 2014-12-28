@@ -1,0 +1,18 @@
+{
+  "name": "360",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/360/thumb.jpg",
+  "type": "360",
+  "category": "content",
+  "size": "640*1008",
+  "animateImgs": [
+    {"src": "templates/styles/360/1.jpg"},
+    {"src": "templates/styles/360/2.jpg"},
+    {"src": "templates/styles/360/3.jpg"},
+    {"src": "templates/styles/360/4.jpg"},
+    {"src": "templates/styles/360/5.jpg"},
+    {"src": "templates/styles/360/6.jpg"},
+    {"src": "templates/styles/360/7.jpg"},
+    {"src": "templates/styles/360/8.jpg"}
+  ]
+}

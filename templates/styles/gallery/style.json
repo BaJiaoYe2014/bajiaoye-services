@@ -1,24 +1,26 @@
 {
-  "name": "common",
+  "name": "gallery",
   "author": "芭蕉叶",
-  "thumb": "templates/styles/common/thumb.jpg",
-  "type": "common",
+  "thumb": "templates/styles/gallery/thumb.jpg",
+  "type": "gallery",
   "category": "content",
   "size": "640*1008",
-  "background": "templates/styles/common/bg.jpg",
+  "background": "templates/styles/gallery/bg.jpg",
+  "imgTipName": "side.jpg",
+  "tipImg": "templates/styles/gallery/side.jpg",
   "effect": "120%",
   "animateImgs": [
     {
       "type": "fadeIn",
       "delayTime": 1000,
       "motion": "fadeIn",
-      "src": "templates/styles/common/1.jpg"
+      "src": "templates/styles/gallery/1.png"
     },
     {
       "type": "",
       "delayTime": 2000,
       "motion": "",
-      "src": "templates/styles/common/2.png"
+      "src": "templates/styles/gallery/2.png"
     },
     {
       "type": "move",
@@ -26,7 +28,7 @@
       "position": "50%",
       "delayTime": 1000,
       "motion": "move-right-50%",
-      "src": "templates/styles/common/3.png"
+      "src": "templates/styles/gallery/3.png"
     }
   ]
 }

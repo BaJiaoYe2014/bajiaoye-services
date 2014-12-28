@@ -1,0 +1,13 @@
+{
+  "name": "video",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/video/thumb.jpg",
+  "type": "video",
+  "category": "content",
+  "background": "templates/styles/video/bg.jpg",
+  "size": "640*1008",
+  "videoScreenshot": "templates/styles/video/cover.png",
+  "videoButton": "templates/styles/video/btn.png",
+  "verticalPosition": "600",
+  "videoUrl": "youku-XNDk3MjMzMDY0"
+}

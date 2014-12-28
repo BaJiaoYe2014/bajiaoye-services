@@ -1,0 +1,17 @@
+{
+  "name": "album",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/album/thumb.jpg",
+  "type": "album",
+  "category": "content",
+  "size": "640*1008",
+  "animateImgs": [
+    {"src": "templates/styles/album/1.jpg"},
+    {"src": "templates/styles/album/2.jpg"},
+    {"src": "templates/styles/album/3.jpg"},
+    {"src": "templates/styles/album/4.jpg"},
+    {"src": "templates/styles/album/5.jpg"},
+    {"src": "templates/styles/album/6.jpg"},
+    {"src": "templates/styles/album/7.jpg"}
+  ]
+}
