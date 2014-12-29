@@ -47,13 +47,14 @@ function completeCopyWorks($worksId, $userId, $obj, $url) {
 	$destCss = 'works/'.$worksId.'/css';
 	$cssPath = 'works/v1/css';
 	$jsPath = 'works/v1/js';
-	$imgPath = 'works/v1/images';
+	$imgPath = 'works/v1/images/icon';
 	if(!file_exists($dest)) {
 		mkdir($dest, 0777, true);
+		mkdir($dest.'/icon', 0777, true);
 	}
 	if(file_exists($from)) {
 		copyDirFiles($from, $dest);
-		copyDirFiles($imgPath, $dest);
+		copyDirFiles($imgPath, $dest.'/icon');
 		delete_directory($from);
 	}
 	// js dir
