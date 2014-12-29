@@ -85,47 +85,49 @@ var app = {
     "contentPageList": [
     	{
     		"type":"common",
-    		"background":"bg_1.jpg",
-    		"effect":"120%", 		
+    		"background":"common/bg_1.jpg",
+    		"effect":"120%",  
     		"animateImgs":[
-   				{
-    				"from":"left",
-    				"position":"50%", //允许的位置值，10%,20%,30%....100%
-    				"delayTime":1000,// 以页面出现为起点往后延时，单位毫秒，开始显示该图片
-    				"src":"l_left.png"
-    			},
+                {
+                    "type":"fadeIn",
+                    "delayTime":1000,// 以页面出现为起点往后延时，单位毫秒，开始显示该图片
+                    "src":"common/l_left.png"
+                },
     			{
+                    "type":"move",
     				"from":"top",
-    				"position":"60%", 
+    				"position":"100%", 
     				"delayTime":1000,
-    				"src":"l_top.png"
+    				"src":"common/l_top.png"
     			},
     			{
+                    "type":"move",
     				"from":"right",
-    				"position":"70%", 
+    				"position":"100%", 
     				"delayTime":1000,
-    				"src":"l_right.png"
+    				"src":"common/l_right.png"
     			}
     		]
     	},
     	{
     		"type":"gallery",
-    		"background":"bg_2.jpg",
-    		"tipImg":"side_1.jpg",
+    		"background":"gallery/bg.jpg",
+    		"tipImg":"gallery/tip.jpg",
     		"animateImgs":[
     			{
-    				"from":"left",
-    				"position":"70%", //允许的位置值，10%,20%,30%....100%
-    				"delayTime":1000,// 以页面出现为起点往后延时，单位毫秒，开始显示该图片
+                    "type":"fadeIn",
+                    "delayTime":1000,// 以页面出现为起点往后延时，单位毫秒，开始显示该图片
     				"src":"gallery/2_left.png"
     			},
     			{
+                    "type":"move",
     				"from":"top",
     				"position":"80%", 
     				"delayTime":1000,
     				"src":"gallery/2_top.png"
     			},
     			{
+                    "type":"move",
     				"from":"right",
     				"position":"90%", 
     				"delayTime":1000,
@@ -174,14 +176,13 @@ var app = {
                  {'src':"album/1_5.jpg"},
                  {'src':"album/1_6.jpg"},
 
-                 {'src':"album/1_7.jpg"},
-                 {'src':"album/1_8.jpg"}
+                 {'src':"album/1_7.jpg"}
             ]
     	},
         {
         	"type": "map",
-            "button":"showMapbutton.png",
-            "background": "mapBg.jpg",            
+            "button":"icon/showMapbutton.png",
+            "background": "map/mapbg.jpg",            
             "title": 'shanghaishi',
             "address":'上海市地处东经120度51分至122度12分',
             "longitude":'120.51',
@@ -192,7 +193,8 @@ var app = {
             "background": "video/videoBg.jpg",
             "videoScreenshot":"video/videoScreenshot.jpg",
             "videoButton":"video/videoBtn.png",
-            "videoCode": '<iframe height=498 width=510 src="http://player.youku.com/embed/XNDk3MjMzMDY0" frameborder=0 allowfullscreen></iframe>'
+            "verticalPosition": "600",// 新增播放按钮垂直位置，水平居中即可
+            "videoUrl": '<iframe height=498 width=510 src="http://player.youku.com/embed/XNDk3MjMzMDY0" frameborder=0 allowfullscreen></iframe>'
         }
     ]
 }
