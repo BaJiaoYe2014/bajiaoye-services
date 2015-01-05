@@ -1,9 +1,26 @@
 [
   {
-    "id": "clickOpen",
-    "name": "开篇样式一",
+  	"id": "clickOpenUpdown",
+    "name": "clickOpenUpdown",
     "author": "芭蕉叶",
-    "type": "start",
-    "thumb": "templates/styles/common/thumb.jpg"
+    "type": "clickOpenUpdown",
+    "category": "start",
+    "thumb": "templates/styles/clickOpenUpdown/thumb.jpg"
+  },
+  {
+  	"id": "clickOpenLeftRight",
+    "name": "clickOpenLeftRight",
+    "author": "芭蕉叶",
+    "type": "clickOpenLeftRight",
+    "category": "start",
+    "thumb": "templates/styles/clickOpenLeftRight/thumb.jpg"
+  },
+  {
+  	"id": "wipeScreen",
+    "name": "wipeScreen",
+    "author": "芭蕉叶",
+    "type": "wipeScreen",
+    "category": "start",
+    "thumb": "templates/styles/wipeScreen/thumb.jpg"
   }
 ]

@@ -1,0 +1,9 @@
+{
+  "name": "clickOpenUpdown",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/clickOpenUpdown/thumb.jpg",
+  "type": "clickOpenUpdown",
+  "category": "start",
+  "size": "640*1008",
+  "imgSrc": "templates/styles/clickOpenUpdown/start.png"
+}

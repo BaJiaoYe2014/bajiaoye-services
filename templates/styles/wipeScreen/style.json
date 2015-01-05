@@ -1,0 +1,9 @@
+{
+  "name": "wipeScreen",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/wipeScreen/thumb.jpg",
+  "type": "wipeScreen",
+  "category": "start",
+  "size": "640*1008",
+  "imgSrc": "templates/styles/wipeScreen/start.png"
+}

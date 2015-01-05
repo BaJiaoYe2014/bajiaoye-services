@@ -1,0 +1,9 @@
+{
+  "name": "clickOpenLeftRight",
+  "author": "芭蕉叶",
+  "thumb": "templates/styles/clickOpenLeftRight/thumb.jpg",
+  "type": "clickOpenLeftRight",
+  "category": "start",
+  "size": "640*1008",
+  "imgSrc": "templates/styles/clickOpenLeftRight/start.png"
+}

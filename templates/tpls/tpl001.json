@@ -20,9 +20,9 @@
     {
       "index": "0",
       "name": "开 篇",
-      "type": "clickOpen",
+      "type": "clickOpenUpdown",
       "size": "640*1008",
-      "clickImg": "templates/tpls/001/clickOpen_0_start.png"
+      "imgSrc": "templates/tpls/001/clickOpenUpdown_0_start.png"
     },
     {
       "index": "1",

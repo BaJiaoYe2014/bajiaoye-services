@@ -176,7 +176,7 @@ function getShowWorks($worksId) {
 	$basic['music'] = $music;
 	$ret['global'] = $basic;
 	$startObj = $result['pages'][0];
-	$startObj->clickImg = replaceImgPath($startObj->clickImg);
+	$startObj->imgSrc = replaceImgPath($startObj->imgSrc);
 	$ret['startAnimate'] = $startObj;
 	$content = array();
 	foreach ($result['pages'] as $key => $value) {
