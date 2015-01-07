@@ -139,6 +139,20 @@ $app->post('/userUpdate', 'middleware', function () use ($app) {
 	echo json_encode($result);
 });
 
+$app->post('/userPass/reset', 'middleware', function () use ($app) {
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	$result = resetNewPassword($jsonObj);
+	echo json_encode($result);
+});
+
+$app->get('/forgetNewPass/:email', 'middleware', function ($email) {
+	$result = getForgetNewPassword($email);
+	echo json_encode($result);
+});
+
 function arrayToObejct($works) {
 	$temp = array();
 	foreach ($works->pages as $item) {

@@ -39,9 +39,11 @@
           "src": "templates/tpls/001/common_1_1.png"
         },
         {
-          "type": "",
-          "delayTime": 2000,
-          "motion": "",
+          "type": "move",
+          "from": "right",
+          "position": "50%",
+          "delayTime": 1000,
+          "motion": "move-right-50%",
           "src": "templates/tpls/001/common_1_2.png"
         },
         {
@@ -70,15 +72,17 @@
           "src": "templates/tpls/001/gallery_2_1.png"
         },
         {
-          "type": "",
-          "delayTime": 2000,
-          "motion": "",
+          "type": "move",
+          "from": "right",
+          "position": "50%",
+          "delayTime": 1000,
+          "motion": "move-right-50%",
           "src": "templates/tpls/001/gallery_2_2.png"
         },
         {
           "type": "move",
           "from": "right",
-          "position": "90%",
+          "position": "50%",
           "delayTime": 1000,
           "motion": "move-right-50%",
           "src": "templates/tpls/001/gallery_2_3.png"

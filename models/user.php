@@ -1,5 +1,5 @@
 <?php
-
+require 'mail.php';
 // Add one user
 function addUser($user) {
 	$ret = false;
@@ -19,7 +19,14 @@ function addUser($user) {
 function getUserById($id) {
 	$result = mysql_query("SELECT userId, email, password FROM users where userId = $id");
 	$row = mysql_fetch_array($result, MYSQL_ASSOC);
+	mysql_free_result($result);
+	return $row;
+}
 
+function getUserByEmail($email) {
+	$result = mysql_query("SELECT userId, email, password FROM users where email = '$email'");
+	$row = mysql_fetch_array($result, MYSQL_ASSOC);
+	
 	mysql_free_result($result);
 	return $row;
 }
@@ -48,13 +55,14 @@ function loginWithPassword($email, $pass) {
 	return $ret;
 }
 
-function checkValidateUser($email, $pass) {
+function checkValidateUser($userId, $pass) {
 	$ret = false;
-	$result = mysql_query("SELECT userId, email, password FROM users where email = $email");
+	$result = mysql_query("SELECT userId, email, password FROM users where userId = $userId");
 	$user = mysql_fetch_array($result, MYSQL_ASSOC);
 	mysql_free_result($result);
-	if(!empty($row)) {
-		if($pass == $user['password']) {
+	if(!empty($user)) {
+		$checkingPass = md5($pass . '&*(^(*^(*)(*)');
+		if($checkingPass == $user['password']) {
 			$ret = true;
 		}
 
@@ -94,6 +102,42 @@ function updateUser($user) {
 	$ret = mysql_query($sql);
 	return $ret;
 }
+
+function updateUserPassword($userId, $password) {
+	$password = md5($password . '&*(^(*^(*)(*)');
+	$sql = "UPDATE users SET ";
+	if(!empty($password)) {
+		$sql .= "password = '$password' ";
+	}
+	$sql .= "WHERE userId = $userId";
+	// echo $sql;
+	$ret = mysql_query($sql);
+	return $ret;
+}
+
+function getForgetNewPassword($email) {
+	$ret = false;
+	$tmp = false;
+	$newPass = substr(base64_encode(rand(0,9999).time()), 0, 8);
+	$user = getUserByEmail($email);
+	if(!empty($user)) {
+		$tmp = updateUserPassword($user["userId"], $newPass);
+	}
+	if($tmp) {
+		$ret = sendEmail($email, $newPass);
+	}
+	return $ret;
+}
+
+function resetNewPassword($user) {
+	$ret = false;
+	$check = checkValidateUser($user->userId, $user->oldPassword);
+	if($check) {
+		$ret = updateUserPassword($user->userId, $user->newPassword);
+	}
+	return $ret;
+}
+
 
 
 ?>
