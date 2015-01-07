@@ -1,18 +1,197 @@
-var app = window.app?window.app:{};
-app.fn  = {};
+var app = window.app||{};
+app.fn  = app.fn||{};
+
+app.fn.loader =function(){
+    var that = this,
+        imgList = [],
+        loadImgNum = 0;
+   // that = $.extend(that,app.instance.common);
+
+    start();
+    
+    function start (){
+        var loaderImg = $('#loaderImg'),
+            imgSrc = app.global.shareImage;
+        loaderImg.css({'background-image':'url(images/'+ imgSrc+')'});
+        getAppImgList();
+    }
+
+    //startAnimate
+    //contentPageList
+    function getAppImgList(){
+        forObject(app.startAnimate);
+        forObject(app.contentPageList);
+        loadImg();
+    }
+
+    function forObject(obj){
+        for(var k in obj){
+            if(typeof obj[k] === 'object'){
+                forObject(obj[k]);
+            }else{
+                var value = obj[k];
+                var reg = /\.(?:jpe?g|gif|png|bmp)$/i;
+                if(reg.test(value)){
+                    imgList.push(value);
+                }
+            }
+        }
+    }
+
+    function loadImg(){
+        var htmlStr = '<div id="appLoadImgbox" style="">';
+        for(var i=0,len=imgList.length; i<len; i++){
+            htmlStr += '<img onload="window.appLoader()" src="images/' + imgList[i] + '"/>';
+        }
+        htmlStr += '</html>';
+        $(htmlStr).appendTo($(document.body));
+    }
+
+    window.appLoader = function(){
+        loadImgNum ++;
+        if(loadImgNum === imgList.length){
+            $('#loaderBox').animate({'opacity':0},1000,function(){
+                $(this).remove();
+                $('#appLoadImgbox').remove();
+            })
+        }
+    }
+};
+
+app.fn.loader();;var app = window.app||{};
+app.fn  = app.fn||{};
+
+app.fn.share = function(){
+    share();
+    //读取配置参数
+    function share(){
+        var global = app.global;
+        var shareTitle = global.pageTitle;
+        var imgUrl = global.shareImg;
+        var descContent = global.pageDescribe;
+        wx_share_out(shareTitle,imgUrl,descContent);
+    }
+
+    function wx_share_out(shareTitle,imgUrl,descContent) {
+        var appid = '';
+        var lineLink = window.location.href;
+        var preStr   = 'http://'+window.location.host;
+        if(imgUrl=='' || imgUrl=='0' || imgUrl=='null'||!imgUrl) {
+            var imgs = document.getElementsByTagName("img");
+            if(imgs.length>0) {
+                var urlm = /http:\/\//i;
+                imgUrl = imgs[0].src;
+                if(!urlm.test(imgUrl)) {
+                    imgUrl = preStr + imgUrl;
+                } 
+            }
+        }else{
+            imgUrl = preStr + '/images/'+imgUrl;
+        }
+        
+        function shareFriend() {
+            WeixinJSBridge.invoke('sendAppMessage',{
+                "appid": appid,
+                "img_url": imgUrl,
+                "img_width": "200",
+                "img_height": "200",
+                "link": lineLink,
+                "desc": descContent,
+                "title": shareTitle
+            }, function(res) {
+                //_report('send_msg', res.err_msg);
+            })  
+        }
+        function shareTimeline() {
+            WeixinJSBridge.invoke('shareTimeline',{
+                "img_url": imgUrl,
+                "img_width": "200",
+                "img_height": "200",
+                "link": lineLink,
+                "desc": descContent,
+                "title": shareTitle
+            }, function(res) {
+                   //_report('timeline', res.err_msg);
+            });
+        }
+        function shareWeibo() {
+            WeixinJSBridge.invoke('shareWeibo',{
+                "content": descContent,
+                "url": lineLink,
+            }, function(res) {
+                //_report('weibo', res.err_msg);
+            });
+        }
+        // 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
+        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+            // 发送给好友
+                WeixinJSBridge.on('menu:share:appmessage', function(argv){
+                    shareFriend();
+                });
+                // 分享到朋友圈
+                WeixinJSBridge.on('menu:share:timeline', function(argv){
+                    shareTimeline();
+                });
+                // 分享到微博
+                WeixinJSBridge.on('menu:share:weibo', function(argv){
+                    shareWeibo();
+                });
+        }, false);
+    } 
+}
+;var app = window.app||{};
+app.fn  = app.fn||{};
+app.instance  = app.instance||{};
+
+//生成位置css
+app.fn.getCss = function(){
+    var num = 10,
+        val = 10,
+        styleStr = '',
+        dirArr = ['left','top','right','bottom'];
+
+    var oneDirection = function(numVal){
+        var dirStr = '',
+            sign   = 1;
+        for(var j=0,len=dirArr.length; j<len; j++){
+            //每个位置值的样式 
+            dirStr += '.'+ dirArr[j] + numVal + '{'+ dirArr[j] +':' + (-1)*numVal + '%;} ';
+            //每个位置值，到达目标动画样式
+            //.toTop0_fromTop10{
+            //-webkit-animation: toTop0_ani .6s ease-out;
+            var animateClassName = 'to' + dirArr[j] + '0_from' + dirArr[j] + numVal,
+                animateName = animateClassName + '_ani',
+                animateTime = numVal *0.01;
+
+            dirStr +=  '.'+animateClassName+'{-webkit-animation: '+ animateName +' '+animateTime+'s ease-out;} ';
+            dirStr += '@-webkit-keyframes  '+ animateName +'{';
+            dirStr += '100%{ '+ dirArr[j] +':0; } } ';
+        }
+        return dirStr;
+    }
+    for(var i=0; i<num; i++){
+        numVal = (10+i*10);
+        //位置值
+        styleStr += oneDirection(numVal);
+    }
+    for(var k=0,kLen=dirArr.length; k<kLen; k++){
+        styleStr += '.' + dirArr[k] + '0{'+ dirArr[k]+':0;} ';
+    }
+    return styleStr;
+}
 
 //公用的属性，继承过来
-app.fn.common = (function(){
+app.instance.common = (new function(){
 	var that = this,
 		pageWidth  = $(window).width(),
 		pageHeight = $(window).height();
 
 	that.pageSize       = {'width':pageWidth,'height':pageHeight};
 	that.musicIcon      = $('#musicIcon');
+	that.startBox       = $('#startBox');
 	that.pageContent    = $('#pageContent');
-	that.loadBox        = $('#loadBox'); 
-
-
+	that.loadBox        = $('#loadBox');
+	that.loadPage       = $('#loadPage'); 
 
 	that.checkKey = function(keyArr,obj){
 		for(var i=0,len=keyArr.length; i<len; i++){
@@ -34,294 +213,440 @@ app.fn.common = (function(){
 		}
 	}
 
-	that.addCss('.page{width:'+pageWidth+'px; height:'+pageHeight+'px;}');
-	return that;
-})();
+	var cssStr = app.fn.getCss();
+	cssStr += '.page{width:'+pageWidth+'px; height:'+pageHeight+'px;}';
+	that.addCss(cssStr);
+	app.fn.share();
+});
 
-app.fn.LoadImg = function(param){
-	var	that   = this, 
-		loadedNum = 0;
 
-	that = $.extend(that,app.fn.common);
-	this.loadImgList = [];
 
-	if(param.obj && param.startFn && (typeof param.startFn === "function")){
-		that.startPage = param.startFn;
-		that.startAnimate = param.obj;
-	}
+;var app = window.app||{};
+app.fn  = app.fn||{};
 
-	start();
-
-	//对外方法
-	function start(param){ 
-		share();
-		loadPageImgs();
-		setPageMessage();
-		writeStyle();
-	}
-
-	//生成位置css
-	function writeStyle(){
-		var num = 10,
-		    val = 10,
-		    styleStr = '',
-		    dirArr = ['left','top','right','bottom'];
-
-		var oneDirection = function(numVal){
-			var dirStr = '',
-			    sign   = 1;
-			for(var j=0,len=dirArr.length; j<len; j++){
-				//每个位置值的样式
-				
-				dirStr += '.'+ dirArr[j] + numVal + '{'+ dirArr[j] +':' + (-1)*numVal + '%;} ';
-				//每个位置值，到达目标动画样式
-				//.toTop0_fromTop10{
-				//-webkit-animation: toTop0_ani .6s ease-out;
-				var animateClassName = 'to' + dirArr[j] + '0_from' + dirArr[j] + numVal,
-				    animateName = animateClassName + '_ani',
-				    animateTime = numVal *0.01;
-
-				dirStr +=  '.'+animateClassName+'{-webkit-animation: '+ animateName +' '+animateTime+'s ease-out;} ';
-				dirStr += '@-webkit-keyframes  '+ animateName +'{';
-				dirStr += '100%{ '+ dirArr[j] +':0; } } ';
-			}
-			return dirStr;
-		}
-		for(var i=0; i<num; i++){
-			numVal = (10+i*10);
-			//位置值
-			styleStr += oneDirection(numVal);
-		}
-		for(var k=0,kLen=dirArr.length; k<kLen; k++){
-			styleStr += '.' + dirArr[k] + '0{'+ dirArr[k]+':0;} ';
-		}
-
-		that.addCss(styleStr);
-	}
-
-	function setPageMessage(){
-		var title    = $('#pageTitle'),
-			global   = app.global,
-			describe = global.pageDescribe;
-		//that.checkKey(["title","describe"],global);
-
-		title.text(global.title);
-		
-	}
-
-	function loadOneImage(url,callback){
-		var img = new Image(); 
-	    if(img.complete) { 
-	        callback.call(img);
-	        return; 
-	    }
-	    img.onload = function () { 
-	        callback.call(img);
-	    };
-	    img.src = url;
-	}
-
-	function loadPageImgs(){
-		var imgList = getLoadImgs();
-
-		for(var j=0,len=imgList.length; j<len; j++){
-			imgUrl = "images/" +  imgList[j];
-			loadOneImage(imgUrl,function(){
-				loadedNum ++;
-				if(loadedNum === imgList.length){
-					that.startPage();
-				}
-			});
-		}
-	}
-
-	function getLoadImgs(){
-		var obj  = app.pageParam
-		eachObj(obj);
-		return that.loadImgList;
-	}
-
-	function eachObj(obj){
-		var loadImgList = that.loadImgList,
-			imgReg      = /.jpg|.png|.gif|.jpeg$/;
-
-		for(var k in obj){
-			var value = obj[k];
-			if(typeof value === "object"){
-				eachObj(value);
-			}else{
-				if(imgReg.test(value)){
-					loadImgList.push(value);
-				}
-			}
-		}
-	}
-
-	function share(){
-		var global = app.global;
-		var shareTitle = global.pageTitle;
-		var imgUrl = global.shareImg;
-		var descContent = global.pageDescribe;
-		wx_share_out(shareTitle,imgUrl,descContent);
-	}
-
-	function wx_share_out(shareTitle,imgUrl,descContent) {
-		var appid = '';
-		var lineLink = window.location.href;
-		var preStr   = 'http://'+window.location.host;
-		if(imgUrl=='' || imgUrl=='0' || imgUrl=='null'||!imgUrl) {
-			var imgs = document.getElementsByTagName("img");
-			if(imgs.length>0) {
-				var urlm = /http:\/\//i;
-				imgUrl = imgs[0].src;
-				if(!urlm.test(imgUrl)) {
-					imgUrl = preStr + imgUrl;
-				} 
-			}
-		}else{
-			imgUrl = preStr + '/images/'+imgUrl;
-		}
-		
-		function shareFriend() {
-			WeixinJSBridge.invoke('sendAppMessage',{
-				"appid": appid,
-				"img_url": imgUrl,
-				"img_width": "200",
-				"img_height": "200",
-				"link": lineLink,
-				"desc": descContent,
-				"title": shareTitle
-			}, function(res) {
-				//_report('send_msg', res.err_msg);
-			})	
-		}
-		function shareTimeline() {
-			WeixinJSBridge.invoke('shareTimeline',{
-				"img_url": imgUrl,
-				"img_width": "200",
-				"img_height": "200",
-				"link": lineLink,
-				"desc": descContent,
-				"title": shareTitle
-			}, function(res) {
-				   //_report('timeline', res.err_msg);
-			});
-		}
-		function shareWeibo() {
-			WeixinJSBridge.invoke('shareWeibo',{
-				"content": descContent,
-				"url": lineLink,
-			}, function(res) {
-				//_report('weibo', res.err_msg);
-			});
-		}
-		// 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
-		document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-			// 发送给好友
-				WeixinJSBridge.on('menu:share:appmessage', function(argv){
-					shareFriend();
-				});
-				// 分享到朋友圈
-				WeixinJSBridge.on('menu:share:timeline', function(argv){
-					shareTimeline();
-				});
-				// 分享到微博
-				WeixinJSBridge.on('menu:share:weibo', function(argv){
-					shareWeibo();
-				});
-		}, false);
-	} 
-
-	function loadOneImage(url,callback){
-		var img = new Image(); 
-	    if(img.complete) { 
-	        callback.call(img);
-	        return; 
-	    }
-	    img.onload = function () { 
-	        callback.call(img);
-	    };
-	    img.src = url;
-	}
-
-	function loadPageImgs(){
-		var imgList = getLoadImgs();
-
-		for(var j=0,len=imgList.length; j<len; j++){
-			imgUrl = "images/" +  imgList[j];
-			loadOneImage(imgUrl,function(){
-				loadedNum ++;
-				console.log(imgUrl + "load Over~~");
-				if(loadedNum === imgList.length){
-					//先注释
-					//that.startPage();
-				}
-			});
-		}
-	}
-
-	function getLoadImgs(){
-		var obj  = app.pageParam
-		eachObj(obj);
-		return that.loadImgList;
-	}
-
-	function eachObj(obj){
-		var loadImgList = that.loadImgList,
-			imgReg      = /.jpg|.png|.gif|.jpeg$/;
-
-		for(var k in obj){
-			var value = obj[k];
-			if(typeof value === "object"){
-				eachObj(value);
-			}else{
-				if(imgReg.test(value)){
-					loadImgList.push(value);
-				}
-			}
-		}
-	}
+app.fn.clickOpenUpdown = function(that){
+    app.fn.clickOpen(that,"upDown");
+}
+app.fn.clickOpenLeftRight = function(that){
+    app.fn.clickOpen(that,"leftRight");
 }
 
-app.fn.StartAnimate = function(){
+//click open
+app.fn.clickOpen = function(that,type){
+    var canvas = $('<canvas width="'+that.pageSize.width+'" height="'+that.pageSize.height+'"></canvas>');
+    var ctx = canvas[0].getContext('2d');
+    var myImage = new Image();
+    var animateConfig = app.startAnimate;
+
+    canvas.appendTo(that.startBox);
+
+    myImage.onload = function() {
+        var img = $(myImage).appendTo($(document.body)).css({'visibility':'hidden'});
+        var  imgWidth  = img.width(),
+             imgHeight = img.height(),
+             imgRate   = imgWidth/imgHeight,
+             pageRate  = that.pageSize.width/that.pageSize.height,
+             startLeft = 0,
+             startTop = 0;
+
+        if(imgRate>=pageRate){
+            startTop  = 0;
+            startLeft = (imgRate*that.pageSize.height - imgWidth)/2;
+        }else{
+            startLeft = 0;
+            startTop  = (that.pageSize.width/imgRate - imgHeight)/2;
+        }
+
+        ctx.drawImage(myImage, 0, 0,imgWidth,imgHeight,0,0,that.pageSize.width,that.pageSize.height);
+        $(myImage).remove();
+        if(type === "upDown"){
+            app.fn.upDownEvt(that,ctx);
+        }else if(type === 'leftRight'){
+            app.fn.leftRightEvt(that,ctx);
+        }
+    }
+    myImage.src = 'images/' + animateConfig.imgSrc;
+}
+
+app.fn.upDownEvt = function(that,ctx){
+    var isAniate = false;
+    that.startBox.bind('touchend',function(e){
+        if(isAniate) return;
+        isAniate = true;
+        var clipHeight = that.pageSize.height/8,
+            startTop   = (that.pageSize.height - clipHeight)/2,
+            startLeft  = 0,
+            clipWidth  = that.pageSize.width;
+
+        ctx.clearRect(0,startTop,that.pageSize.width,clipHeight);
+
+        var clipNext = function(){
+            setTimeout(function(){
+                var stepH = (that.pageSize.height-clipHeight)/8;
+                if(stepH<=4){
+                    stepH = 4;
+                }
+                clipHeight += stepH;
+                startTop = (that.pageSize.height - clipHeight)/2;
+
+                if(startTop<=0){
+                    isAniate = false;
+                    that.startBox.hide();
+                    if(app.instance.pageContent.startPageOne){
+                        app.instance.pageContent.startPageOne();
+                    }
+                }else{
+                    clipNext();
+                }
+                ctx.clearRect(0,startTop,that.pageSize.width,clipHeight);
+            },30);
+        }
+        clipNext();
+
+        e.stopPropagation();
+        e.preventDefault(); 
+        return false;
+    });
+}
+
+app.fn.leftRightEvt = function(that,ctx){
+    var isAniate = false;
+    that.startBox.bind('touchend',function(e){
+        if(isAniate) return;
+        isAniate = true;
+        var clipWidth = that.pageSize.width/8,
+            startTop   = 0,
+            startLeft  = (that.pageSize.width - clipWidth)/2,
+            clipHeight  = that.pageSize.height;
+
+        ctx.clearRect(startLeft,startTop,clipWidth,clipHeight);
+
+        var clipNext = function(){
+            setTimeout(function(){
+                var stepW = (that.pageSize.width-clipWidth)/8;
+                if(stepW<=4){
+                    stepW = 4;
+                }
+                clipWidth += stepW;
+                startLeft = (that.pageSize.width - clipWidth)/2;
+
+                if(startLeft<=0){
+                    isAniate = false;
+                    that.startBox.hide();
+                    if(app.instance.pageContent.startPageOne){
+                        app.instance.pageContent.startPageOne();
+                    }
+                }else{
+                    clipNext();
+                }
+                ctx.clearRect(startLeft,startTop,clipWidth,clipHeight);
+            },30);
+        }
+        clipNext();
+
+        e.stopPropagation();
+        e.preventDefault(); 
+        return false;
+    });
+}
+
+
+
+
+;var app = window.app||{};
+app.fn  = app.fn||{};
+
+
+app.fn.wipeScreen = function(that){
+    wipeScreen();
+    
+    function wipeScreen(){
+        var animateConfig = app.startAnimate,
+            startBoxHtml = '<img src ="images/icon/hand.png" id="startHand"  class="startHand"/>'
+                         + '<img onload="window.wipeImgload(this)" src="images/' + animateConfig.imgSrc + '" id="wipeImg"  class="wipeImg"/>';
+        
+        that.startBox.html(startBoxHtml);
+        that.wipeImg = $('#wipeImg');
+    }
+
+    function wipeOver(){
+        that.stopHand = true;
+        that.wipeImg.eraser('clear');
+        that.startHand.animate({'opacity':0},500);
+        that.startBox.animate({'opacity':0},1000,function(){
+            that.startBox.hide();
+            //alert(app.instance.pageContent.startPageOne);
+            if(app.instance.pageContent.startPageOne){
+                app.instance.pageContent.startPageOne();
+            }
+        });
+    }
+
+    function setHandAnimate(){
+        var handObj    = that.startHand,
+            toRightFun = null,
+            toLeftFun  = null;
+
+        toRightFun = function(){
+            handObj.animate({"left":'80%',"bottom":450},1000,function(){
+                if(!that.stopHand){
+                    toLeftFun();
+                }
+            });
+        }
+
+        toLeftFun = function(){
+            handObj.animate({"left":'20%',"bottom":350},1000,function(){
+                if(!that.stopHand){
+                    toRightFun();
+                }
+            });
+        }
+
+        toRightFun();
+    }
+
+    window.wipeImgload = function(img){
+        var width = $(img).width(),
+            height= $(img).height();
+
+        that.wipeImg.eraser({
+            size:75,
+            completeRatio: .2,
+            completeFunction: wipeOver});
+        that.startHand  = that.startBox.find('#startHand');
+        setHandAnimate();
+    }
+}
+
+;var app = window.app||{};
+app.fn  = app.fn||{};
+
+
+app.fn.drawWords = function(that){
+
+    drawWords();
+
+    //描字动画
+    function drawWords(){
+
+        var animateConfig = app.startAnimate,
+            startBoxHtml = '<img src ="images/icon/hand.png" id="startHand"  class="startHand"/>'
+                            + (animateConfig.textImg? '<img src="images/'+ animateConfig.textImg +'"  id="startTxt" class="disNone"/>':'')
+                            + '<img class="hollowImg" onLoad="window.hollowImgLoad(this);" id="startTopImg" src="images/'+ animateConfig.hollowImg +'" />'
+                            + '<div id="startCanvasOut"><canvas width="100%" height="600" id="startCanvas"></canvas></div>'
+                            + '<img src="images/'+ animateConfig.solidImg +'" class="solidImg"  id="startBottomImg"/>';
+       
+        that.startBox.html(startBoxHtml);
+        //如果有背景，设置背景
+        that.startBox.css({"height":that.pageSize.height,"width":that.pageSize.width,"background":"url(images/"+ animateConfig.background + ")"});
+
+
+        that.startTopImg    = that.startBox.find('#startTopImg');
+        that.startCanvas    = that.startBox.find('#startCanvas');
+        that.startBottomImg = that.startBox.find('#startBottomImg');
+        that.startHand      = that.startBox.find('#startHand');
+        that.startTxt       = that.startBox.find('#startTxt');
+
+
+        if(app.startAnimate.coordinate){
+            that.targetDotList  = app.startAnimate.coordinate;
+        }else{
+            console.log("缺少app.startAnimate.coordinate的值,请查看");
+        }       
+    }
+
+    window.hollowImgLoad = function(img){
+         var width = $(img).width(),
+             height= $(img).height();
+        
+        that.rateY = that.pageSize.height/height;
+        that.rateX = that.rateY;
+
+        //设置图片 div、canvas 等大小
+        setBoxSize();
+        setHandAnimate();
+        drawWordsEvt();
+    }
+
+    function setBoxSize(){
+        var markWidth  = that.startTopImg.width(),
+            markHeight = that.startBottomImg.height();
+        that.startTopImg.css({"z-index":10});
+        that.startBottomImg.css({"z-index":1});
+        that.startCanvas.attr({'width':markWidth,'height':markHeight});
+        that.startBox.css({"height":that.pageSize.height,"overflow":"hidden"});
+    }
+
+    function setHandAnimate(){
+        var handObj    = that.startHand,
+            toRightFun = null,
+            toLeftFun  = null;
+
+        toRightFun = function(){
+            handObj.animate({"left":410,"top":250},1000,function(){
+                if(!that.stopHand){
+                    toLeftFun();
+                }
+            });
+        }
+
+        toLeftFun = function(){
+            handObj.animate({"left":160,"top":350},1000,function(){
+                if(!that.stopHand){
+                    toRightFun();
+                }
+            });
+        }
+
+        toRightFun();
+    }
+
+    //初测事件
+    function drawWordsEvt(){
+        var startTopImgDom = that.startTopImg.get(0);
+        console.log(startTopImgDom);
+        startTopImgDom.addEventListener('touchstart', topStartEvt, false);
+        startTopImgDom.addEventListener('touchmove', topMoveEvt, false);
+        startTopImgDom.addEventListener('touchend', topEndEvt, false);
+        that.startCtx = that.startCanvas.get(0).getContext('2d');        
+    }
+
+    // touch事件
+    function topStartEvt(e){
+        e.preventDefault();
+    }
+
+    
+    function getOneDotColor(x,y){
+        var context  = that.startCtx;
+        // 获取该点像素的数据
+        var imageData = context.getImageData(x*that.rateX, y*that.rateY, 1, 1);
+        // 获取该点像素数据
+        console.log(x*that.rateX+'---'+ y*that.rateY);
+        var pixel = imageData.data; 
+        return  pixel[0] + "_" + pixel[1] + "_" + pixel[2] + "_" + pixel[3];
+    }
+
+    function topMoveEvt(e){
+        var x = e.touches[0].pageX,
+            y = e.touches[0].pageY,
+            context = that.startCtx,
+            drawArr = [],
+            offset  = that.startCanvas.offset(),
+            hasLeft = offset.left,
+            hasTop  = offset.top;
+
+        x = x - hasLeft;
+        y = y - hasTop;
+
+        context.beginPath();
+        context.arc(x,y-2,that.drawSize+Math.random()*2,0,2*Math.PI,true);  
+        context.fill();
+        drawArr.push({x:x,y:y});
+        if(drawArr.length>2){
+            var lastObj = drawArr[drawArr.length-2];
+            context.lineWidth = that.drawSize - 2;
+            context.moveTo(lastObj.x, lastObj.y-2);
+            context.lineTo(x, y-2);
+            context.fill();
+            context.stroke();
+            context.closePath();
+        }          
+    }
+
+    function topEndEvt(e){
+        var x,y,color,
+            flag=false,
+            targetDotList = that.targetDotList,
+            len = targetDotList.length,
+            targetDots = 0;
+
+        console.log(JSON.stringify(targetDotList));
+        for(var i=0; i<len; i++){
+            x = targetDotList[i][0];
+            y = targetDotList[i][1];
+            color = getOneDotColor(x,y); 
+            if(color ==="0_0_0_255"){
+                targetDots +=1 ;
+            }
+        }
+        console.log('targetDots=' + targetDots);
+
+        if(targetDots>=len*0.5){
+            flag = true;
+        }
+
+        if(!that.stopHand){
+            that.stopHand = true;
+            that.startHand.animate({"opacity":0},500);
+        }
+
+        //临水测试，写true,注意擦去
+        //flag = true;
+        if(flag){
+            drawAllColor();
+        }
+    }
+
+    function drawAllColor(){
+        var context = that.startCtx;
+        context.fillStyle="#000000";  //填充的颜色
+        context.fillRect(5,5,that.startCanvas.width()-15,that.startCanvas.height()-15);  //填充颜色 x y坐标 宽 高
+        overAnimate(); 
+    }
+
+    function overAnimate(){
+        that.startBox.animate({"opacity":0},1000,function(){
+            $(this).hide();
+            if(app.instance.pageContent.startPageOne){
+                app.instance.pageContent.startPageOne();
+            }
+        });
+    }
+
+}
+
+;app.instance.startAnimate = (new function(){
 	var that = this;
-	that = $.extend(that,app.fn.common);
+	that = $.extend(that,app.instance.common);
 	that.type           = '';
 	
-	that.startHand      = null;
-	that.startTopImg    = null;
-	that.startCanvas    = null;
-	that.startBottomImg = null;
 	that.startHand      = null;
 	that.startCtx       = null; //canvas context
 	that.stopHand       = false;
 	that.drawSize       = 13;
-
-
 
 	that.start = function(){
 		var type = app.startAnimate.type;
 		hideLoader();
 		musicIcon();
 		that.type = type;
+
 		switch(type){
-			case "clickOpen":
-			clickOpen();
+			case "clickOpenUpdown":
+			app.fn.clickOpenUpdown(that);
 			break;
 
-			case "drawWords":  // 描字
-			drawWords();
+			case "clickOpenLeftRight":
+			app.fn.clickOpenLeftRight(that);
 			break;
 
 			case "wipeScreen":  // 擦拭屏幕开场
-			wipeScreen();
+			app.fn.wipeScreen(that);
+			break;
+
+			case "drawWords":  // 描字
+			app.fn.drawWords(that);
 			break;
 		}
 	}
 
+	//临时执行,注意删除
+	that.start();
+
 	function musicIcon(){
 		var musicNode = app.global.music;
-
 		if(musicNode && musicNode.name){
 			var musicObj = $('<audio id="myaudio" src="images/'+ musicNode.name +'" autoplay loop="true" hidden="true"  />');
 			musicObj.appendTo($(document.body));
@@ -376,39 +701,7 @@ app.fn.StartAnimate = function(){
 		}
 	}
 
-	window.imgload = function(img){
-		var width = $(img).width(),
-		    height= $(img).height();
-		
-		that.startBox.css({'background':'url(images/'+ app.contentPageList[0].imageName +') center center','bacground-size':'cover'});
-		that.wipeImg.eraser({
-			size:75,
-			completeRatio: .2,
-			completeFunction: wipeOver});
-		that.startHand  = that.startBox.find('#startHand');
-		setHandAnimate();
-	}
-
-	function wipeScreen(){
-		var animateConfig = app.startAnimate,
-			startBoxHtml = '<img src ="images/hand.png" id="startHand"  class="startHand"/>'
-			             + '<img onload="window.imgload(this)" src="images/' + animateConfig.wipeImg + '" id="wipeImg"  class="wipeImg"/>';
-		
-		that.startBox.html(startBoxHtml);
-		that.wipeImg = $('#wipeImg');
-		that.pageContent.css({'margin-top':(-1)*that.pageSize.height});
-
-	}
-
-	function wipeOver(){
-		that.stopHand = true;
-		that.wipeImg.eraser('clear');
-		that.startHand.animate({'opacity':0},500);
-		that.startBox.animate({'opacity':0},1000,function(){
-			that.startBox.hide();
-			that.pageContent.css({'margin-top':0});
-		});
-	}
+	
 
 	function getcontentFirstImg (argument) {
 		var item    = app.contentPageList[0],
@@ -423,72 +716,7 @@ app.fn.StartAnimate = function(){
 		return imgStr;
 	}
 
-	function clickOpen(){
-		var canvas = $('<canvas width="'+that.pageSize.width+'" height="'+that.pageSize.height+'"></canvas>');
-		canvas.appendTo(that.startBox);
-		var ctx = canvas[0].getContext('2d');
-		var myImage = new Image();
-		var animateConfig = app.startAnimate;
 
-		myImage.onload = function() {
-			var img = $(myImage).appendTo($(document.body)).css({'visibility':'hidden'});
-			var  imgWidth  = img.width(),
-	             imgHeight = img.height(),
-	             imgRate   = imgWidth/imgHeight,
-	             pageRate  = that.pageSize.width/that.pageSize.height,
-			     startLeft = 0,
-			     startTop = 0;
-
-			if(imgRate>=pageRate){
-	    		startTop  = 0;
-	    		startLeft = (imgRate*that.pageSize.height - imgWidth)/2;
-	    	}else{
-	    		startLeft = 0;
-	    		startTop  = (that.pageSize.width/imgRate - imgHeight)/2;
-	    	}
-
-			ctx.drawImage(myImage, 0, 0,imgWidth,imgHeight,0,0,that.pageSize.width,that.pageSize.height);
-			$(myImage).remove();
-			var isAniate = false;
-			
-			that.startBox.css({'background':'url(images/' + getcontentFirstImg() + ') center center','bacground-size':'covser'});
-			that.startBox.bind(that.click,function(e){
-				if(isAniate) return;
-				isAniate = true;
-				var clipHeight = that.pageSize.height/8,
-				    startTop   = (that.pageSize.height - clipHeight)/2,
-		            startLeft  = 0,
-					clipWidth  = that.pageSize.width;
-
-				ctx.clearRect(0,startTop,that.pageSize.width,clipHeight);
-				var clipNext = function(){
-					setTimeout(function(){
-						
-						var stepH = (that.pageSize.height-clipHeight)/8;
-						if(stepH<=4){
-							stepH = 4;
-						}
-						clipHeight += stepH;
-						startTop = (that.pageSize.height - clipHeight)/2;
-
-						if(startTop<=0){
-							isAniate = false;
-							that.startBox.hide();
-						}else{
-							clipNext();
-						}
-						ctx.clearRect(0,startTop,that.pageSize.width,clipHeight);
-					},30);
-				}
-				clipNext();
-				e.stopPropagation();
-				e.preventDefault(); 
-				return false;
-			})
-		}
-
-		myImage.src = 'images/' + animateConfig.clickImg;
-	}
 
 	//隐藏loader.........
 	function hideLoader(){
@@ -498,202 +726,24 @@ app.fn.StartAnimate = function(){
 		})
 	}
 
-	//描字动画
-	function drawWords(){
-		var animateConfig = app.startAnimate,
-			startBoxHtml = '<img src ="images/hand.png" id="startHand"  class="startHand"/>'
-			                + (animateConfig.textImg? '<img src="images/'+ animateConfig.textImg +'"  id="startTxt" class="disNone"/>':'')
-			                + '<img class="start-top-img" id="startTopImg" src="images/'+ animateConfig.hollowImg +'" />'
-			                + '<div id="startCanvasOut"><canvas width="640" height="590" id="startCanvas"></canvas></div>'
-			                + '<img src="images/'+ animateConfig.solidImg +'" class="start-bottom-img"  id="startBottomImg"/>';
-		that.startBox.html(startBoxHtml);
-		//如果有背景，设置背景
-		if(app.global.pageBg){
-			that.startBox.css({"height":that.pageSize.height,"width":that.pageSize.width,"background":"url(images/"+app.global.pageBg + ")"});
-		}
-
-		that.startTopImg    = that.startBox.find('#startTopImg');
-		that.startCanvas    = that.startBox.find('#startCanvas');
-		that.startBottomImg = that.startBox.find('#startBottomImg');
-		that.startHand      = that.startBox.find('#startHand');
-		that.startTxt   = that.startBox.find('#startTxt');
-		if(app.startAnimate.coordinate){
-			that.targetDotList  = app.startAnimate.coordinate;
-		}else{
-			console.log("缺少app.startAnimate.coordinate的值,请查看");
-		}
-
-		//设置图片 div、canvas 等大小
-		setBoxSize();
-		setHandAnimate();
-		drawWordsEvt();
-	}
-	//初测事件
-	function drawWordsEvt(){
-		/*
-		var startTopImgDom = that.startTopImg.get(0);
-		startTopImgDom.addEventListener('touchstart', topStartEvt, false);
-		startTopImgDom.addEventListener('touchmove', topMoveEvt, false);
-		startTopImgDom.addEventListener('touchend', topEndEvt, false);
-		that.startCtx = that.startCanvas.get(0).getContext('2d');
-		*/
-	}
-	// touch事件
-	function topStartEvt(e){
-		e.preventDefault();
-	}
-	function topEndEvt(e){
-		var x,y,color,
-		    flag=false,
-		    targetDotList = that.targetDotList,
-		    len = targetDotList.length,
-		    targetDots = 0;
-
-		for(var i=0; i<len; i++){
-			x = targetDotList[i][0];
-			y = targetDotList[i][1];
-			color = getOneDotColor(x,y); 
-			if(color ==="0_0_0_255"){
-				targetDots +=1 ;
-			}
-		}
-
-		if(targetDots>=len*0.5){
-			flag = true;
-		}
-		
-		if(!that.stopHand){
-			that.stopHand = true;
-			that.startHand.animate({"opacity":0},500);
-		}
-
-		flag = true;
-	    if(flag){
-	    	drawAllColor();
-	    }else{
-	    	
-	    }
-	}
-
-	function getOneDotColor(x,y){
-		var context  = that.startCtx;
-		// 获取该点像素的数据
-        var imageData = context.getImageData(20, 20, 1, 1);
-        // 获取该点像素数据
-        var pixel = imageData.data;	
-        return  pixel[0] + "_" + pixel[1] + "_" + pixel[2] + "_" + pixel[3];
-	}
-
-	function topMoveEvt(e){
-		var x = e.touches[0].pageX,
-			y = e.touches[0].pageY,
-			context = that.startCtx,
-			drawArr = [],
-			offset  = that.startCanvas.offset(),
-			hasLeft = offset.left,
-			hasTop  = offset.top;
-
-		x = x - hasLeft;
-		y = y - hasTop;
-
-	    context.beginPath();
-	    context.arc(x,y-2,that.drawSize+Math.random()*2,0,2*Math.PI,true);  
-	    context.fill();
-	    drawArr.push({x:x,y:y});
-	    if(drawArr.length>2){
-	    	var lastObj = drawArr[drawArr.length-2];
-	    	context.lineWidth = that.drawSize - 2;
-	    	context.moveTo(lastObj.x, lastObj.y-2);
-			context.lineTo(x, y-2);
-			context.fill();
-			context.stroke();
-			context.closePath();
-	    }		   
-	}
-
-	function drawAllColor(){
-		var context = that.startCtx;
-		context.fillStyle="#000000";  //填充的颜色
-		context.fillRect(5,5,that.startCanvas.width()-15,that.startCanvas.height()-15);  //填充颜色 x y坐标 宽 高
-		showStartTxt();	
-	}
-
-	function showStartTxt(){
-		that.startTxt.css({'top':500,"opcity":0}).show().animate({
-			top:720,
-			opcity:1
-		},1500,function(){
-			/*
-			that.startBox.animate({"opacity":0},1000,function(){
-				$(this).hide();
-			});
-			*/
-			var page1   = that.pageContent.find('.page1'),
-				htmlStr = "<div class='showContentBoxTemp' id='showContentBoxTemp'>";
-
-			page1.each(function(){
-				htmlStr += $(this).get(0).outerHTML;
-			});
-
-			htmlStr　+ "</div>";
-            $(document.body).prepend($(htmlStr));
-            var tempObj = $('#showContentBoxTemp');
-
-            tempObj.animate({'opacity':1},1000,function(){
-            	that.startBox.hide();
-            	$(this).remove();
-            });
-		});
-
-	}
 
 
-	function setHandAnimate(){
-		var handObj    = that.startHand,
-		    toRightFun = null,
-		    toLeftFun  = null;
 
-		toRightFun = function(){
-			handObj.animate({"left":410,"top":250},1000,function(){
-				if(!that.stopHand){
-					toLeftFun();
-				}
-			});
-		}
 
-		toLeftFun = function(){
-			handObj.animate({"left":160,"top":350},1000,function(){
-				if(!that.stopHand){
-					toRightFun();
-				}
-			});
-		}
+	
 
-		toRightFun();
-	}
+	
+});
 
-	function setBoxSize(){
-		var markWidth  = that.startTopImg.width(),
-			markHeight = that.startBottomImg.height();
 
-		//that.pageContent.css({"width":pageWidth,"height":pageHeight,"margin-top":pageHeight*(-1),"overflow":"hidden"});
-		that.startTopImg.css({"z-index":10});
-		that.startBottomImg.css({"z-index":1});
-		that.startCanvas.parent().css({'width':markWidth,'height':markHeight,"z-index":5});
-		that.startBox.css({"height":that.pageSize.height,"overflow":"hidden"});
-	}
-}
-
-app.fn.PageContent = function(){
+;app.instance.pageContent =  (new function(){
 	var that = this;
-	that = $.extend(that,app.fn.common);
+	that = $.extend(that,app.instance.common);
 	that.pageList     = app.contentPageList;
 	that.pageNum   = that.pageList.length;
 	that.curPageIndex = 0; //页面索引统一，从0开始
 	that.curPageType  = app.contentPageList[0].type;
 	that.pageIsMove   = false;
-
-
 	init();
 
 	function init(){
@@ -701,7 +751,7 @@ app.fn.PageContent = function(){
 	}
 	
 	function initHtml(){
-		var htmlStr = '<div class="upDownArrow" id="upDownArrow"></div>'+
+		var htmlStr = '<div class="upDownArrow disNone" id="upDownArrow"></div>'+
                       '<div class="rightArrow disNone" id="rightArrow"></div>' + 
 					  '<div class="leftArrow disNone" id="leftArrow"></div>',
 
@@ -1014,37 +1064,6 @@ app.fn.PageContent = function(){
 			}else if($element.hasClass('toSize100')){
 				$element.removeClass('bigSize120 toSize100');
 			}
-			/*
-			if($element.hasClass('toOpacity100fast')){
-				$element.removeClass('toOpacity100fast opacity1');
-				var diffScale  = 1.2 -1;
-				var allStep = (2000/30);
-				var oneStep = diffScale/allStep;
-
-				var goScale =function(myVal){
-					if(myVal<1) myVal = 1;
-					$element.css({'-webkit-transform':'scale('+ myVal +','+ myVal +')'});
-					if(myVal ===1) {
-						//'-webkit-transform':
-						var str = "-webkit-transform: scale(1, 1);";  
-						var reg = /-webkit-transform:.{1,}1\);/; 
-						var allStyleStr = $element.attr('style');
-						allStyleStr = allStyleStr.replace(reg,'');
-						$element.attr('style',allStyleStr).removeClass('bigSize120');
-					}
-					if(myVal>1){
-						setTimeout(function(){
-							goScale(myVal-oneStep);
-						},30);
-					}
-				};
-
-				goScale(1.2 - oneStep);
-
-			}else if($element.hasClass('toSize100')){
-				$element.removeClass('bigSize120 toSize100');
-			}
-			*/
 		});
 
 		//动画内页图层注册事件
@@ -1345,25 +1364,26 @@ app.fn.PageContent = function(){
 	//show page one
 	that.startPageOne = function(){
 		that.curPageIndex = that.pageNum-1;
-		showNextPage(0);
+		showNextPage(0,true);
 	}
 
-	function initNextPage(nextIndex,curPage,nextPage,pageType){
+	function initNextPage(nextIndex,curPage,nextPage,pageType,isFirst){
 		var effect = nextPage.attr('effect');
 		that.curPageIndex = nextIndex;
 		that.curPageType  = pageType;
 
-		/*
-		if(/120%/.test(effect)){
-			nextPage.addClass('bigSize120 opacity0').show().addClass('toOpacity100fast');
-		}
-		*/
-		
-		if(/120%/.test(effect)){
-			nextPage.addClass('bigSize120 opacity0').show().addClass('toOpacity100fast');
-		}else if(/fade/.test(effect)){
-			nextPage.addClass('opacity0').show().addClass('toOpacity100');
-		}
+        if(!isFirst){
+    		if(/120%/.test(effect)){
+    			nextPage.addClass('bigSize120 opacity0').show().addClass('toOpacity100fast');
+    		}else if(/fade/.test(effect)){
+    			nextPage.addClass('opacity0').show().addClass('toOpacity100');
+    		}
+        }else{
+            if(/120%/.test(effect)){
+                nextPage.addClass('toSize100');
+            }
+            that.upDownArrow.removeClass('disNone');
+        }
 
 		curPage.removeClass('lowZindex highZindex').addClass('centerZindex');
 		setTimeout(function(){
@@ -1371,6 +1391,7 @@ app.fn.PageContent = function(){
 		},700);
 
 		nextPage.removeClass('disNone lowZindex centerZindex').addClass('highZindex');
+
 		if(/common|gallery/.test(pageType)){
 			var innerAnimateBoxs = nextPage.find('div[animate="true"]');
 			innerAnimateBoxs.each(function(){
@@ -1382,7 +1403,7 @@ app.fn.PageContent = function(){
 					animateBoxItem.removeClass(targetClass).addClass(fromClass);
 				}else if(type === 'fadeIn'){
 					animateBoxItem.removeClass(targetClass +' disNone').addClass('opacity0');
-				}
+  				}
   			});
   			innerAnimateBoxs.hide();
 		}
@@ -1396,36 +1417,29 @@ app.fn.PageContent = function(){
 	}
 
 	//show new page
-	function showNextPage(nextIndex){
+	function showNextPage(nextIndex,isFirst){
 		var nextPage  = that.pageList.eq(nextIndex),
 		    innerBoxs = nextPage.find('div'),
 		    curPage   = that.pageList.eq(that.curPageIndex),
 		    effect    = nextPage.attr('effect'),
 		    pageType  = nextPage.attr('type'),
 		    showPageDelayTime = 800;
-
 		that.curPageType = pageType;
-		initNextPage(nextIndex,curPage,nextPage,pageType);
-		//"common","gallery","360","slide","album","video","map"
+        initNextPage(nextIndex,curPage,nextPage,pageType,isFirst);
 
+		//"common","gallery","360","slide","album","video","map"
 		clearCurPage(curPage,curPage.attr('type'));
-		
-		//页面切换
-		if(/120%/.test(effect)){
-			setTimeout(function(){
-				nextPage.addClass('toOpacity100fast');
-			},20);
-			
-		}else if(/fade/.test(effect)){
-			nextPage.addClass('opacity0').show().addClass('toOpacity100');
-		}
 
 		//内页动画
 		if( (pageType === 'common' || pageType === 'gallery') && innerBoxs.length>0 ) {
 			var innerDelayTime = 0;
 			if(effect==='120%'){
 				innerDelayTime = 1800;
+                if(isFirst){
+                    innerDelayTime -= 300;
+                }
 			}
+
 			setTimeout(function(){
 				innerBoxsAnimate(innerBoxs,nextPage,pageType);
 			},innerDelayTime);
@@ -1717,19 +1731,7 @@ app.fn.PageContent = function(){
 		}
 		goUp();
 	}
-}
-
-$(function(){
-	app.start = function(){
-		var startAnimate  = new app.fn.StartAnimate();
-		var loader        = new app.fn.LoadImg(startAnimate);
-		var pageContent   = new app.fn.PageContent();
-
-		pageContent.startPageOne();
-	}
-
-	app.start();
-})
+});
 
 
 

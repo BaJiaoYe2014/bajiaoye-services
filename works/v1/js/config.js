@@ -32,24 +32,33 @@ var app = {
 	具体内容后续讨论
     ***/
     "startAnimate": {
-        "type": "clickOpen",
-        "clickImg": "click.jpg"
+        "type": "drawWords",
+        "coordinate": [[241,283],[341,208],[342,250]],   //,[390,284],[312,300],[238,278]
+        "hollowImg": "logo-space02.png",
+        "solidImg": "logo-start02.jpg",
+        "background":"drawBg.jpg"
     },
+
     /***
     "startAnimate": {
-        "hollowImg": "logo-space02.png",
-        "textImg": "content-0.png",
-        "coordinate": "[[340,240]]",   //,[390,284],[312,300],[238,278]
-        "type": "drawWords",
-        "solidImg": "logo-start02.jpg"
-    },
+        "type": "clickOpenUpdown",
+        "imgSrc": "click.jpg"
+    }
     "startAnimate": {
-        "type": "clickOpen",
-        "clickImg": "click.jpg"
+        "type": "clickOpenLeftRight",
+        "imgSrc": "click.jpg"
     }
     "startAnimate": {
         "type": "wipeScreen",
-        "wipeImg": "wipe.jpg"
+        "imgSrc": "wipe.jpg"
+    }
+
+    "startAnimate": {
+        "type": "drawWords",
+        "coordinate": [[340,240],[312,300],[238,278]],   //,[390,284],[312,300],[238,278]
+        "hollowImg": "logo-space02.png",
+        "solidImg": "logo-start02.jpg",
+        "background":"drawBg.jpg"
     }
     ***/
     /***
