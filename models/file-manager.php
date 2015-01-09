@@ -223,4 +223,12 @@ function delete_directory($dirname) {
 	 return true;
 }
 
+function removeDeletedImages($imgsArr) {
+	foreach($imgsArr as $item) {
+		if(file_exists($item)) {
+			unlink($item);
+		}
+	}
+}
+
 ?>

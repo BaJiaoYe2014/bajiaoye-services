@@ -67,6 +67,11 @@ $app->post('/opusUpdate', 'middleware', function () use ($app) {
 	if($result) {
 		$obj = getShowWorks($jsonObj->id);
 		completeCopyWorks($jsonObj->id, $jsonObj->userId, $obj, $jsonObj->url);
+		// remove images not need
+		//print_r($jsonObj);
+		if(!empty($jsonObj->delImages)) {
+			removeDeletedImages($jsonObj->delImages);
+		}
 	}
 	echo json_encode($result);
 });
