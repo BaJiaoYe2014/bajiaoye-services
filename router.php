@@ -82,6 +82,94 @@ $app->post('/opusDelete/:worksId', 'middleware', function ($worksId) {
 	echo json_encode($result);
 });
 
+$app->post('/savePage/:worksId', 'middleware', function ($worksId) use ($app) {
+	//find images to replace
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	$index = $jsonObj->index;
+	// print_r($jsonObj);
+	foreach ($jsonObj as $key=>$item) {
+		if(getValidValues($key, $item)){//value is valid
+			$tmpArr = explode('_', $item);
+			$newImg = $tmpArr[0].'_'.$index.'_'.$tmpArr[2];
+			$jsonObj->$key = $newImg;
+			copy($item, $newImg);
+		}
+		if($key == 'animateImgs') {
+			$animateImgs = array();
+			foreach ($item as $ani) {
+				foreach ($ani as $k => $value) {
+					if(getValidValues($k, $value)){//value is valid
+						$tmpArr = explode('_', $value);
+						$newImg = $tmpArr[0].'_'.$index.'_'.$tmpArr[2];
+						$ani[$k] = $newImg;
+						copy($value, $newImg);
+					}
+				}
+				$animateImgs[] = $ani;
+			}
+			$jsonObj->$key = $animateImgs;
+		}
+	}
+	// $jsonObj = (object) $jsonObj;
+	// append page works
+	$works = (object) getWorksById($worksId);
+	$works->pages[] = $jsonObj;
+	$result = updateWorks($works);
+	if($result) {
+		$obj = getShowWorks($worksId);
+		completeCopyWorks($worksId, $works->userId, $obj, $works->url);
+	}
+	$newWorks = (object) getWorksById($worksId);
+	echo json_encode($newWorks);
+});
+
+$app->post('/deletePage/:worksId', 'middleware', function ($worksId) use ($app) {
+	//find images to replace
+	$request = $app->request;
+	$params = $request->getBody();;
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	$index = $jsonObj->index;
+	// print_r($jsonObj);
+	foreach ($jsonObj as $key=>$item) {
+		if(getValidValues($key, $item)){//value is valid
+			if(file_exists($item)) {
+				unlink($item);
+			}
+		}
+		if($key == 'animateImgs') {
+			$animateImgs = array();
+			foreach ($item as $ani) {
+				foreach ($ani as $k => $value) {
+					if(getValidValues($k, $value)){//value is valid
+						if(file_exists($value)) {
+							unlink($value);
+						}
+					}
+				}
+			}
+		}
+	}
+	$works = (object) getWorksById($worksId);
+	$pages = array();
+	foreach ($works->pages as $key=>$item) {
+		if($item->index != $index) {
+			$pages[] = $item;
+		}
+	}
+	$works->pages = $pages;
+	$result = updateWorks($works);
+	if($result) {
+		$obj = getShowWorks($worksId);
+		completeCopyWorks($worksId, $works->userId, $obj, $works->url);
+	}
+	$newWorks = (object) getWorksById($worksId);
+	echo json_encode($newWorks);
+});
+
 $app->get('/tplList', 'middleware', function () {
 	$result = getTemplateList();
 	echo $result;

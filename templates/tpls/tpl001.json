@@ -62,7 +62,6 @@
       "type": "gallery",
       "size": "640*1008",
       "background": "templates/tpls/001/gallery_2_bg.jpg",
-      "imgTipName": "side.jpg",
       "tipImg": "templates/tpls/001/gallery_2_side.jpg",
       "animateImgs": [
         {
