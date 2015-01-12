@@ -146,6 +146,7 @@ function refactorWorks($works, $worksId) {
 		}
 	}
 	if(!empty($works->music)) {
+		$works->music = (object) $works->music;
 		foreach ($works->music as $key => $value) {
 			if(getValidValues($key, $value)){//value is valid
 				if(strrpos($value, "works/".$worksId) === false){

@@ -4,10 +4,11 @@
   "author": "芭蕉叶",
   "thumb": "templates/tpls/001/thumb.jpg",
   "type": "会议活动",
-  "url": "works/204/ODY4MzE0Mj.html",
+  "url": "works/205/NTYzNjE0Mj.html",
   "music": {
     "hasMusic": true,
     "hasIcon": true,
+    "displayName": "default",
     "name": "templates/tpls/001/bg.mp3",
     "iconPostion": "top-right",
     "isAutoPlay": true

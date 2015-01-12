@@ -278,6 +278,7 @@ function getShowWorks($worksId) {
 	$basic['pageTitle'] = $result['pageTitle'];
 	$basic['pageDescribe'] = $result['pageDescribe'];
 	$basic['shareImage'] = replaceImgPath($result['shareImage']);
+	$basic['backgroundColor'] = $result['backgroundColor'];
 	$music = $result['music'];
 	$music->name = replaceImgPath($result['music']->name);
 	$basic['music'] = $music;
