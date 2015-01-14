@@ -14,13 +14,13 @@ var app = {
 	app的整体配置，
 	标题，页面描述，分享时的图片,背景音乐
 	音乐图标位置 可选值 top-right,top-left,bottom-left,bottom-right
-	*/        
+	*/
     "global": {
         "music": {
         	"hasMusic":true,
             "hasIcon": true,
             "name": "wind.mp3",
-            "iconPostion":"top-right"   
+            "iconPostion":"top-right"
         },
         "pageTitle": "我是页面标题",
         "pageDescribe": "我是页面描述",
@@ -32,11 +32,8 @@ var app = {
 	具体内容后续讨论
     ***/
     "startAnimate": {
-        "type": "drawWords",
-        "coordinate": [[241,283],[341,208],[342,250]],   //,[390,284],[312,300],[238,278]
-        "hollowImg": "logo-space02.png",
-        "solidImg": "logo-start02.jpg",
-        "background":"drawBg.jpg"
+        "type": "clickOpenLeftRight",
+        "imgSrc": "click.jpg"
     },
 
     /***
@@ -55,7 +52,7 @@ var app = {
 
     "startAnimate": {
         "type": "drawWords",
-        "coordinate": [[340,240],[312,300],[238,278]],   //,[390,284],[312,300],[238,278]
+        "coordinate": [[241,283],[341,208],[342,250]],   //,[390,284],[312,300],[238,278]
         "hollowImg": "logo-space02.png",
         "solidImg": "logo-start02.jpg",
         "background":"drawBg.jpg"
@@ -67,7 +64,7 @@ var app = {
     页面类型 "common","gallery","360","slide","album","video"
 
 	1)common
-	
+
 	background,页面背景，可以为空
 	effect页面切换效果，目前支持:"120%","fade",放大120% 或淡出淡入，默认不写 "fade"
     animateImgs,动画图片，不分先后，以固定的延时，显现在页面上
@@ -95,7 +92,7 @@ var app = {
     	{
     		"type":"common",
     		"background":"common/bg_1.jpg",
-    		"effect":"120%",  
+    		"effect":"120%",
     		"animateImgs":[
                 {
                     "type":"fadeIn",
@@ -105,14 +102,14 @@ var app = {
     			{
                     "type":"move",
     				"from":"top",
-    				"position":"100%", 
+    				"position":"100%",
     				"delayTime":1000,
     				"src":"common/l_top.png"
     			},
     			{
                     "type":"move",
     				"from":"right",
-    				"position":"100%", 
+    				"position":"100%",
     				"delayTime":1000,
     				"src":"common/l_right.png"
     			}
@@ -131,14 +128,14 @@ var app = {
     			{
                     "type":"move",
     				"from":"top",
-    				"position":"80%", 
+    				"position":"80%",
     				"delayTime":1000,
     				"src":"gallery/2_top.png"
     			},
     			{
                     "type":"move",
     				"from":"right",
-    				"position":"90%", 
+    				"position":"90%",
     				"delayTime":1000,
     				"src":"gallery/2_right.png"
     			}
@@ -191,11 +188,11 @@ var app = {
         {
         	"type": "map",
             "button":"icon/showMapbutton.png",
-            "background": "map/mapbg.jpg",            
+            "background": "map/mapbg.jpg",
             "title": 'shanghaishi',
             "address":'上海市地处东经120度51分至122度12分',
-            "longitude":'120.51',
-            "latitude":'122.12'
+            "longitude":'121.480425',
+            "latitude":'31.234589'
         },
         {
         	"type": "video",
@@ -203,7 +200,10 @@ var app = {
             "videoScreenshot":"video/videoScreenshot.jpg",
             "videoButton":"video/videoBtn.png",
             "verticalPosition": "600",// 新增播放按钮垂直位置，水平居中即可
-            "videoUrl": '<iframe height=498 width=510 src="http://player.youku.com/embed/XNDk3MjMzMDY0" frameborder=0 allowfullscreen></iframe>'
+            "videoUrl":"youku-XNDk3MjMzMDY0"
+            //"verticalPosition": "600",// 新增播放按钮垂直位置，水平居中即可
+            //"videoUrl": "youku－XNDk3MjMzMDY0",// 新增部分，siteType－videoID，然后拼装成可播放地址，http://player.youku.com/embed/XNDk3MjMzMDY0，放在iframe代码中
+            //"videoUrl": '<iframe height=498 width=510 src="http://player.youku.com/embed/XNDk3MjMzMDY0" frameborder=0 allowfullscreen></iframe>'
         }
     ]
 }

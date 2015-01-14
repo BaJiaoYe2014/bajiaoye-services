@@ -5,10 +5,10 @@ app.fn.loader =function(){
     var that = this,
         imgList = [],
         loadImgNum = 0;
-   // that = $.extend(that,app.instance.common);
+    //that = $.extend(that,app.instance.common);
 
     start();
-    
+
     function start (){
         var loaderImg = $('#loaderImg'),
             imgSrc = app.global.shareImage;
@@ -39,7 +39,7 @@ app.fn.loader =function(){
     }
 
     function loadImg(){
-        var htmlStr = '<div id="appLoadImgbox" style="">';
+        var htmlStr = '<div id="appLoadImgbox">';
         for(var i=0,len=imgList.length; i<len; i++){
             htmlStr += '<img onload="window.appLoader()" src="images/' + imgList[i] + '"/>';
         }
@@ -47,9 +47,18 @@ app.fn.loader =function(){
         $(htmlStr).appendTo($(document.body));
     }
 
+    window.musicIsLoad = function(){
+        alert('music is load ~~');
+    }
+
     window.appLoader = function(){
         loadImgNum ++;
         if(loadImgNum === imgList.length){
+            $('#pageContent .page').each(function(i){
+                if(i>0){
+                    $(this).addClass('disNone');
+                }
+            });
             $('#loaderBox').animate({'opacity':0},1000,function(){
                 $(this).remove();
                 $('#appLoadImgbox').remove();
@@ -154,7 +163,7 @@ app.fn.getCss = function(){
         var dirStr = '',
             sign   = 1;
         for(var j=0,len=dirArr.length; j<len; j++){
-            //每个位置值的样式 
+            //每个位置值的样式
             dirStr += '.'+ dirArr[j] + numVal + '{'+ dirArr[j] +':' + (-1)*numVal + '%;} ';
             //每个位置值，到达目标动画样式
             //.toTop0_fromTop10{
@@ -191,7 +200,7 @@ app.instance.common = (new function(){
 	that.startBox       = $('#startBox');
 	that.pageContent    = $('#pageContent');
 	that.loadBox        = $('#loadBox');
-	that.loadPage       = $('#loadPage'); 
+	that.loadPage       = $('#loadPage');
 
 	that.checkKey = function(keyArr,obj){
 		for(var i=0,len=keyArr.length; i<len; i++){
@@ -202,10 +211,10 @@ app.instance.common = (new function(){
 	}
 
 	that.addCss = function(cssStr){
-		try { 
+		try {
 		    var style = document.createStyleSheet();
 		    style.cssText = cssStr;
-		 }catch (e) { 
+		 }catch (e) {
 		    var style = document.createElement("style");
 		    style.type = "text/css";
 		    style.textContent = cssStr;
@@ -215,6 +224,8 @@ app.instance.common = (new function(){
 
 	var cssStr = app.fn.getCss();
 	cssStr += '.page{width:'+pageWidth+'px; height:'+pageHeight+'px;}';
+    $('title').text(app.global.pageTitle);
+    //console.log('app.global.pageTitle=' + app.global.pageTitle);
 	that.addCss(cssStr);
 	app.fn.share();
 });
@@ -611,7 +622,7 @@ app.fn.drawWords = function(that){
 	var that = this;
 	that = $.extend(that,app.instance.common);
 	that.type           = '';
-	
+
 	that.startHand      = null;
 	that.startCtx       = null; //canvas context
 	that.stopHand       = false;
@@ -648,14 +659,18 @@ app.fn.drawWords = function(that){
 	function musicIcon(){
 		var musicNode = app.global.music;
 		if(musicNode && musicNode.name){
-			var musicObj = $('<audio id="myaudio" src="images/'+ musicNode.name +'" autoplay loop="true" hidden="true"  />');
-			musicObj.appendTo($(document.body));
-			that.myaudio = $('#myaudio');
-			if(musicNode.hasSwitch){
-				var domAudio = that.myaudio[0];
+
+			if(musicNode.hasMusic){
+
+				var audioStr = '<audio id="myaudio" src="images/'+ musicNode.name +'" autoplay loop="true" hidden="true"  />';
+            	$(audioStr).appendTo($(document.body));
+            	that.myaudio = $('#myaudio');
+
+            	var domAudio = that.myaudio[0];
+
 				domAudio.addEventListener('canplaythrough', function(e){
 		            //callback(true);
-		            var iconStr =  '<div class="icon-music" id="musicBox">' + 
+		            var iconStr =  '<div class="icon-music" id="musicBox">' +
 							       '<img id="icon-music-img" src="images/icon/icon_music.png" style="transform: rotate(0deg); " />'+
 							       '</div>';
 					$(iconStr).appendTo($(document.body));
@@ -679,7 +694,7 @@ app.fn.drawWords = function(that){
 
 					goMusiceImg();
 
-					musicBox.bind(that.click,function(e){
+					musicBox.bind("touchstart",function(e){
 						if(musicIsPlay){
 							clearInterval(that.musicTimer);
 							domAudio.pause();
@@ -692,16 +707,16 @@ app.fn.drawWords = function(that){
 						}
 
 						e.stopPropagation();
-						e.preventDefault(); 
+						e.preventDefault();
 						return false;
-					})
+					});
 
 		        }, false);
 			}
 		}
 	}
 
-	
+
 
 	function getcontentFirstImg (argument) {
 		var item    = app.contentPageList[0],
@@ -725,18 +740,173 @@ app.fn.drawWords = function(that){
 			$(this).hide();
 		})
 	}
-
-
-
-
-
-	
-
-	
 });
 
 
-;app.instance.pageContent =  (new function(){
+;var app = window.app||{};
+app.fn  = app.fn||{};
+
+app.fn.baiduMapFun = function(obj){
+
+    var title,address,longitude,latitude,
+        mapId        = 'baidumapContent';
+
+    function setMapValue(obj){
+        title = obj.title;
+        address   = obj.address;
+        longitude = Number(obj.longitude);
+        latitude  = Number(obj.latitude);
+        console.log(JSON.stringify(obj));
+    }
+
+    //创建和初始化地图函数：
+    function initMap(obj){
+        setMapValue(obj)
+        createMap();//创建地图
+        setMapEvent();//设置地图事件
+        addMapControl();//向地图添加控件
+        addMarker();//向地图中添加marker
+    }
+
+    //创建地图函数：
+    function createMap(){
+        var map = new BMap.Map(mapId);//在百度地图容器中创建一个地图
+        var point = new BMap.Point(longitude,latitude);//定义一个中心点坐标
+        map.centerAndZoom(point,18);//设定地图的中心点和坐标并将地图显示在地图容器中
+        window.map = map;//将map变量存储在全局
+    }
+
+    //地图事件设置函数：
+    function setMapEvent(){
+        map.disableDragging();//禁用地图拖拽事件
+        map.disableScrollWheelZoom();//禁用地图滚轮放大缩小，默认禁用(可不写)
+        map.disableDoubleClickZoom();//禁用鼠标双击放大
+        map.disableKeyboard();//禁用键盘上下左右键移动地图，默认禁用(可不写)
+    }
+
+    //地图控件添加函数：
+    function addMapControl(){
+        //向地图中添加缩放控件
+    var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_ZOOM});
+    map.addControl(ctrl_nav);
+                }
+
+
+    var pointStr = longitude +'|' + latitude;
+    //标注点数组
+    var markerArr = [{title:title,content:address,point:pointStr,isOpen:1,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+         ];
+    //创建marker
+    function addMarker(){
+        for(var i=0;i<markerArr.length;i++){
+            var json = markerArr[i];
+            var p0 = json.point.split("|")[0];
+            var p1 = json.point.split("|")[1];
+            var point = new BMap.Point(p0,p1);
+            var iconImg = createIcon(json.icon);
+            var marker = new BMap.Marker(point,{icon:iconImg});
+            var iw = createInfoWindow(i);
+            var label = new BMap.Label(json.title,{"offset":new BMap.Size(json.icon.lb-json.icon.x+10,-20)});
+            marker.setLabel(label);
+            map.addOverlay(marker);
+            label.setStyle({
+                        borderColor:"#808080",
+                        color:"#333",
+                        cursor:"pointer"
+            });
+
+            (function(){
+                var index = i;
+                var _iw = createInfoWindow(i);
+                var _marker = marker;
+                _marker.addEventListener("click",function(){
+                    this.openInfoWindow(_iw);
+                });
+                _iw.addEventListener("open",function(){
+                    _marker.getLabel().hide();
+                })
+                _iw.addEventListener("close",function(){
+                    _marker.getLabel().show();
+                })
+                label.addEventListener("click",function(){
+                    _marker.openInfoWindow(_iw);
+                })
+                if(!!json.isOpen){
+                    label.hide();
+                    _marker.openInfoWindow(_iw);
+                }
+            })()
+        }
+    }
+    //创建InfoWindow
+    function createInfoWindow(i){
+        var json = markerArr[i];
+        var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.title + "'>" + json.title + "</b><div class='iw_poi_content'>"+json.content+"</div>");
+        return iw;
+    }
+    //创建一个Icon
+    function createIcon(json){
+        var icon = new BMap.Icon("http://app.baidu.com/map/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
+        return icon;
+    }
+
+    initMap(obj);//创建和初始化地图
+
+}
+;var app = window.app||{};
+app.fn  = app.fn||{};
+
+app.fn.video  = (function(){
+
+    var getVideoCode = function(videoId){
+        var codeArr = videoId.split("-"),
+            htmlCode = '<span class="videoCloseButton">关闭</span>';
+        if(codeArr[0] === 'youku'){
+            htmlCode += '<iframe height=600 width="100%" src="http://player.youku.com/embed/'+ codeArr[1] +'" frameborder=0 allowfullscreen></iframe>';
+        }
+        return htmlCode;
+    }
+
+    var buildVideoPageFun = function(item,type){
+        var effect  = item.effect?item.effect:'fade',
+            pageHtml = '',
+            pageBg   = item.background,
+            styleStr = pageBg?'style="background-image:url(images/'+ pageBg +')"':'',
+            videoCode = getVideoCode(item.videoUrl);
+
+            //curShow  = '';
+        pageHtml =  '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex disNone">';
+        pageHtml += '<div class="likePageBox" style="background:url(images/'+ item.videoScreenshot +') no-repeat center center ; background-size:100% auto;"></div>';
+        pageHtml += '<img class="videoBtn" src="images/'+ item.videoButton +'" />';
+        pageHtml += '<div class="videoBox disNone">'+ videoCode +'</div></div>';
+        return pageHtml;
+    }
+
+    var registerEvtFun = function(videoPages){
+        var videoOpenBtn = videoPages.find('.videoBtn'),
+            videoCloseBtn = videoPages.find('.videoCloseButton');
+
+        videoOpenBtn.bind('touchend',function(){
+            var curVideoBox = $(this).parent().find('.videoBox');
+            curVideoBox.removeClass('disNone');
+        });
+
+        videoCloseBtn.bind('touchend',function(){
+            $(this).parent().addClass('disNone');
+        });
+
+    }
+
+    return {
+        buildVideoPage:function(item,type){
+            return buildVideoPageFun(item,type);
+        },
+        registerEvt:function(videoPages){
+            registerEvtFun(videoPages);
+        }
+    }
+
+})();;app.instance.pageContent =  (new function(){
 	var that = this;
 	that = $.extend(that,app.instance.common);
 	that.pageList     = app.contentPageList;
@@ -744,15 +914,16 @@ app.fn.drawWords = function(that){
 	that.curPageIndex = 0; //页面索引统一，从0开始
 	that.curPageType  = app.contentPageList[0].type;
 	that.pageIsMove   = false;
+
 	init();
 
 	function init(){
 		initHtml();
 	}
-	
+
 	function initHtml(){
 		var htmlStr = '<div class="upDownArrow disNone" id="upDownArrow"></div>'+
-                      '<div class="rightArrow disNone" id="rightArrow"></div>' + 
+                      '<div class="rightArrow disNone" id="rightArrow"></div>' +
 					  '<div class="leftArrow disNone" id="leftArrow"></div>',
 
 			pageNum = that.pageNum,
@@ -776,11 +947,11 @@ app.fn.drawWords = function(that){
 				break;
 
 		        case "360":
-		        htmlStr += build360OrSlidePage(item,type);
+		        htmlStr += build360OPage(item,type);
 		        break;
 
 		        case "slide":
-		        htmlStr += build360OrSlidePage(item,type);
+		        htmlStr += buildSlidePage(item,type);
 		        break;
 
 		        case "album":
@@ -790,9 +961,9 @@ app.fn.drawWords = function(that){
 		        case "map":
 		        htmlStr += buildMapPage(item,type,i);
                 break;
-               
+
 		        case "video":
-		        htmlStr += buildVideoPage(item,type);
+		        htmlStr += app.fn.video.buildVideoPage(item,type);
 				break;
 			}
 		}
@@ -811,22 +982,6 @@ app.fn.drawWords = function(that){
 		pageTouchEvt();
 	}
 
-	//视频页面
-	function buildVideoPage(item,type){
-		var effect  = item.effect?item.effect:'fade',
-			bigSizeStyle = effect==='120%'?'bigSize120':'',
-            pageHtml = '',
-            pageBg   = item.background,
-            styleStr = pageBg?'style="background-image:url(images/'+ pageBg +')"':'';
-
-            //curShow  = '';
-        pageHtml =  '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex '+ bigSizeStyle +' disNone">';
-        pageHtml += '<div class="likePageBox" style="background:url(images/'+ item.videoScreenshot +') no-repeat center center ; background-size:100% auto;"></div>';
-        pageHtml += '<img class="videoBtn" src="images/'+ item.videoButton +'" />';
-        pageHtml += '<div class="videoBox disNone">'+ item.videoCode +'</div></div>';
-
-        return pageHtml;    
-	}
 
 	function buildAlbumPage(item,type){
 		var effect  = item.effect?item.effect:'fade',
@@ -838,7 +993,7 @@ app.fn.drawWords = function(that){
             curShow  = '';
 
         pageHtml = '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page albumPage lowZindex '+ bigSizeStyle +' disNone">';
-        
+
         for(var i=0,len = animateImgs.length; i<len; i++){
         	curShow = i===0? 'true':'';
         	var showIndex = i;
@@ -849,14 +1004,31 @@ app.fn.drawWords = function(that){
         	//pageHtml += '<div type="' + type + '" class="likePageBox" ' + curShow + ' index="'+ i +'" style="background-image:url(images/'+ animateImgs[i]['src'] +')"> </div>';
         	pageHtml += '<img targetClass="albumImgShow'+ showIndex +'" class="albumImg" src= "images/'+ animateImgs[i]['src'] + '" />';
         }
-
-
         pageHtml += '</div>';
         return pageHtml;
 	}
 
+    //slide 页面
+    function buildSlidePage(item,type){
+        var effect  = item.effect?item.effect:'fade',
+            bigSizeStyle = effect==='120%'?'bigSize120':'',
+            pageHtml = '',
+            animateImgs  = item.animateImgs,
+            pageBg   = item.background,
+            styleStr = pageBg?'style="background-image:url(images/'+ pageBg +')"':'',
+            zindex   = animateImgs.length;
+
+        pageHtml = '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex '+ bigSizeStyle +'">';
+        pageHtml += '<div class="swipe-wrap">'
+        for(var i=0,len = animateImgs.length; i<len; i++){
+            pageHtml += '<div style="background-image:url(images/'+ animateImgs[i]['src'] +');)"> </div>';
+        }
+        pageHtml += '</div></div>';
+        return pageHtml;
+    }
+
 	//360页面
-	function build360OrSlidePage(item,type){
+	function build360OPage(item,type){
 		var effect  = item.effect?item.effect:'fade',
 			bigSizeStyle = effect==='120%'?'bigSize120':'',
             pageHtml = '',
@@ -867,7 +1039,7 @@ app.fn.drawWords = function(that){
             zindex   = animateImgs.length;
 
         pageHtml = '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex '+ bigSizeStyle +' disNone">';
-        
+
         for(var i=0,len = animateImgs.length; i<len; i++){
         	curShow = i===0? 'true':'';
         	pageHtml += '<div slideImg="true" class="likePageBox" ' + curShow + ' index="'+ i +'" style="background-image:url(images/'+ animateImgs[i]['src'] +');)"> </div>';
@@ -910,9 +1082,8 @@ app.fn.drawWords = function(that){
         		animateHtml = getMoveHtml(animateImg,aniType);
         	}else if(aniType === "fadeIn"){
         		animateHtml = getFateInHtml(animateImg,aniType);
-        		console.log(animateHtml);
         	}
-        	
+
         	pageHtml += animateHtml;
         }
         if(type === 'gallery'){
@@ -930,127 +1101,27 @@ app.fn.drawWords = function(that){
 		return htmlStr;
 	}
 
-	function baiduMapFun(obj){
-		var title = obj.title,
-			address   = obj.address,
-		    longitude = obj.longitude,
-		    latitude  = obj.latitude,
-		    id        = 'baidumapContent';
-		//创建和初始化地图函数：
-	    function initMap(){
-	        createMap();//创建地图
-	        setMapEvent();//设置地图事件
-	        addMapControl();//向地图添加控件
-	        addMarker();//向地图中添加marker
-	    }
-
-	    //创建地图函数：
-	    function createMap(){
-	        var map = new BMap.Map(id);//在百度地图容器中创建一个地图
-	        var point = new BMap.Point(longitude,latitude);//定义一个中心点坐标
-	        map.centerAndZoom(point,17);//设定地图的中心点和坐标并将地图显示在地图容器中
-	        window.map = map;//将map变量存储在全局
-	    }
-	    
-	    //地图事件设置函数：
-	    function setMapEvent(){
-	        map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
-	        map.disableScrollWheelZoom();//禁用地图滚轮放大缩小，默认禁用(可不写)
-	        map.disableDoubleClickZoom();//禁用鼠标双击放大
-	        map.disableKeyboard();//禁用键盘上下左右键移动地图，默认禁用(可不写)
-	    }
-	    
-	    //地图控件添加函数：
-	    function addMapControl(){
-	        //向地图中添加缩放控件
-		    var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
-		    map.addControl(ctrl_nav);
-	    }
-	    
-	    //标注点数组
-	    var markerArr = [{title:title,content:address,point:(longitude+"|"+latitude),isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}];
-	    //创建marker
-	    function addMarker(){
-	        for(var i=0;i<markerArr.length;i++){
-	            var json = markerArr[i];
-	            var p0 = json.point.split("|")[0];
-	            var p1 = json.point.split("|")[1];
-	            var point = new BMap.Point(p0,p1);
-	            var iconImg = createIcon(json.icon);
-	            var marker = new BMap.Marker(point,{icon:iconImg});
-	            var iw = createInfoWindow(i);
-	            var label = new BMap.Label(json.title,{"offset":new BMap.Size(json.icon.lb-json.icon.x+10,-20)});
-	            marker.setLabel(label);
-	            map.addOverlay(marker);
-	            label.setStyle({
-	                        borderColor:"#808080",
-	                        color:"#333",
-	                        cursor:"pointer"
-	            });
-	            
-	            (function(){
-	                var index = i;
-	                var _iw = createInfoWindow(i);
-	                var _marker = marker;
-	                _marker.addEventListener("click",function(){
-	                    this.openInfoWindow(_iw);
-	                });
-	                _iw.addEventListener("open",function(){
-	                    _marker.getLabel().hide();
-	                })
-	                _iw.addEventListener("close",function(){
-	                    _marker.getLabel().show();
-	                })
-	                label.addEventListener("click",function(){
-	                    _marker.openInfoWindow(_iw);
-	                })
-	                if(!!json.isOpen){
-	                    label.hide();
-	                    _marker.openInfoWindow(_iw);
-	                }
-	            })()
-	        }
-	    }
-	    //创建InfoWindow
-	    function createInfoWindow(i){
-	        var json = markerArr[i];
-	        var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.title + "'>" + json.title + "</b><div class='iw_poi_content'>"+json.content+"</div>");
-	        return iw;
-	    }
-	    //创建一个Icon
-	    function createIcon(json){
-	        var icon = new BMap.Icon("http://app.baidu.com/map/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
-	        return icon;
-	    }
-	    
-	    initMap();//创建和初始化地图
-	}
-
 	function setCssEvt($element,callback){
 		if(!$element.attr('hasEvt')){
 			$element.bind('webkitAnimationEnd',function(){
 				callback($(this));
-
-
-
 			});
 			$element.attr('hasEvt',true);
 		}
-	}
-
-	function goScale($element,myVal){
-
-		
 	}
 
 	function pageBoxCssEvt(){
 		var pageList  = that.pageList,
 		    bigPages  = pageList.filter('div[effect="120%"]'),
 		    fadePages = pageList.filter('div[effect="fade"]'),
-		    innnerAnimateBox = that.pageList.find('div[animate="true"]'),
-		    tipImgBoxs = that.pageList.find('div[tipImg="true"]'),
-		    slideImgBoxs = that.pageList.find('div[slide="true"]'),
-		    Img360Boxs = that.pageList.filter('[type="360"]');
+            slidePages = pageList.filter('div[type="slide"]'),
+		    innnerAnimateBox = pageList.find('div[animate="true"]'),
+		    tipImgBoxs = pageList.find('div[tipImg="true"]'),
+		    slideImgBoxs = pageList.find('div[slide="true"]'),
+		    Img360Boxs = pageList.filter('[type="360"]'),
+		    videoPages = pageList.filter('[type="video"]');
+
+		app.fn.video.registerEvt(videoPages);
 
 		setCssEvt(fadePages,function($element){
 			if($element.hasClass('toOpacity100')){
@@ -1078,7 +1149,6 @@ app.fn.drawWords = function(that){
 					$element.addClass(targetClass).removeClass(animateClass + ' ' + fromClass);
 				}
 			}else if(type === 'fadeIn'){
-				console.log($element.attr('class'));
 				if($element.hasClass(animateClass)){
 					$element.removeClass(animateClass + ' opacity0');
 				}
@@ -1090,7 +1160,6 @@ app.fn.drawWords = function(that){
 			//toright100_hide
 			var hideClass = $element.attr('hideClass'),
 				showClass = $element.attr('showClass');
-
 			//toright100_hide  toright0_show
 			if($element.hasClass('toright_hide')){
 
@@ -1101,12 +1170,14 @@ app.fn.drawWords = function(that){
 			}else if($element.hasClass('toright_show')){
 				$element.removeClass('toright_show right100').addClass(showClass).attr('state','show');
 				that.rightTipBtn.css('background-image','url(images/icon/arrow_right_2.png)');
-				that.pageIsMove = false;			
+				that.pageIsMove = false;
 			}
 
 		})
 
 		//slideToShow_toright
+        /*
+        console.log('slideImgBoxs=' + slideImgBoxs.length);
 		setCssEvt(slideImgBoxs,function($element){
 			//toright100_hide
 			var hideClass = $element.attr('hideClass'),
@@ -1121,48 +1192,70 @@ app.fn.drawWords = function(that){
 				that.rightTipBtn.css('background-image','url(images/icon/arrow_right_2.png)');
 				that.pageIsMove = false;
 			}
-
 		})
+        */
 
 		//百度map按钮
-		var mapPage = that.pageList.filter('[type="map"]'),
-		    showMapButton = mapPage.find('.showMapbutton'),
-		    mapBox = $('#baidumapContent').parent(),
-		    closeBtn = mapBox.find('.mapCloseButton'),
-		    mapIsShow = false,
-		    mapIndex = Number(showMapButton.parent().attr('pageindex'));
-		
-		showMapButton.bind('touchend',function(e){
-			baiduMapFun(app.contentPageList[mapIndex]);
-			mapIsShow = true;
-			hideLeftRightArrow();
-			that.upDownArrow.hide();
-			that.pageIsMove = true;
-			mapBox.show().animate({'top':'30%'},400);
+        var mapPage = that.pageList.filter('[type="map"]'),
+            showMapButton = mapPage.find('.showMapbutton'),
+            mapBox = $('#baidumapContent').parent(),
+            closeBtn = mapBox.find('.mapCloseButton'),
+            mapIsShow = false,
+            mapIndex = Number(showMapButton.parent().attr('pageindex'));
 
-			e.stopPropagation();
-    		e.preventDefault(); 
-    		return false;
-    		
-		});
+        var hideLeftRightArrow = function(){
+            that.leftArrow.addClass('disNone');
+            that.rightArrow.addClass('disNone');
+        }
 
-		closeBtn.bind('touchend',function(e){
-			mapBox.addClass('hideMapBox');
-			that.upDownArrow.show();
-			that.pageIsMove = false;
+        //app.fn.baiduMapFun(app.contentPageList[mapIndex]);
+        showMapButton.bind('touchend',function(e){
+            mapBox.show().css({'top':'30%','visibility':'hidden'});
+            app.fn.baiduMapFun(app.contentPageList[mapIndex]);
 
-			e.stopPropagation();
-    		e.preventDefault(); 
-    		return false;
-		});
+            mapBox.css({'top':'100%','visibility':'visible','display':'none'});
+            mapIsShow = true;
+            hideLeftRightArrow();
+            that.upDownArrow.hide();
+            that.pageIsMove = true;
+            mapBox.show().animate({'top':'30%'},400);
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        });
 
-		setCssEvt(mapBox,function($element){
-			if($element.hasClass('showMapBox')){
-				$element.removeClass('showMapBox').css({'top':'30%'});
-			}else if($element.hasClass('hideMapBox')){
-				$element.removeClass('hideMapBox').hide().css({'top':'110%'});
-			}
-		});
+        closeBtn.bind('touchend',function(e){
+            mapBox.addClass('hideMapBox');
+            that.upDownArrow.show();
+            that.pageIsMove = false;
+
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        });
+
+        setCssEvt(mapBox,function($element){
+            if($element.hasClass('showMapBox')){
+                $element.removeClass('showMapBox').css({'top':'30%'});
+            }else if($element.hasClass('hideMapBox')){
+                $element.removeClass('hideMapBox').hide().css({'top':'110%'});
+            }
+        });
+
+        slidePages.each(function(){
+            var slidePage = $(this)[0];
+            new Swipe(slidePage, {
+                startSlide: 2,
+                speed: 400,
+                auto: false,
+                continuous: true,
+                disableScroll: false,
+                stopPropagation: false,
+                callback: function(index, elem) {},
+                transitionEnd: function(index, elem) {}
+            });
+        });
+
 	}
 
 	function pageTouchEvt(){
@@ -1178,7 +1271,7 @@ app.fn.drawWords = function(that){
 	        startX = touch.pageX;
 	        startY = touch.pageY;
 		    e.stopPropagation();
-    		e.preventDefault(); 
+    		e.preventDefault();
     		return false;
 		});
 
@@ -1188,7 +1281,7 @@ app.fn.drawWords = function(that){
 	        endX = touch.pageX;
 	        endY = touch.pageY;
 		   	e.stopPropagation();
-    		e.preventDefault(); 
+    		e.preventDefault();
     		return false;
 		});
 
@@ -1207,7 +1300,7 @@ app.fn.drawWords = function(that){
 		    clearXY();
 
 		    e.stopPropagation();
-    		e.preventDefault(); 
+    		e.preventDefault();
     		return false
 		});
 
@@ -1222,11 +1315,12 @@ app.fn.drawWords = function(that){
 			if(that.pageIsMove) return;
 			var nextIndex = 0;
 
+
+
 			//左右滑动
 			if( Math.abs(diffX) > that.pageSize.width/5 && Math.abs(diffX) > Math.abs(diffY)){   // shuiping slide
 				leftRightSlide(diffX);
 			}else if( Math.abs(diffY) > that.pageSize.height/5){
-				console.log('diffY=' + diffY);
 				if(diffY>0){
 					//上一张
 					nextIndex = that.curPageIndex-1;
@@ -1239,7 +1333,7 @@ app.fn.drawWords = function(that){
 				showNextPage(nextIndex);
 			}else{
 				that.pageIsMove = false;
-			} 
+			}
 		}
 	}
 
@@ -1255,9 +1349,11 @@ app.fn.drawWords = function(that){
 			page360Slide(diffX);
 			break;
 
+            /*
 			case 'slide':
 			pageSlide(diffX);
 			break;
+            */
 
 			case 'album':
 			pageAlbum(diffX);
@@ -1277,7 +1373,7 @@ app.fn.drawWords = function(that){
 			imgList = curPage.find('.albumImg'),
 			imgLength  = imgList.length,
 			targetImg  = imgList.filter(':last');
-			
+
 		if(diffX>0){
 			targetImg.addClass('albumImgToRight');
 		}else{
@@ -1285,6 +1381,7 @@ app.fn.drawWords = function(that){
 		}
 	}
 
+    /*
 	function pageSlide(diffX){
 		if(that.pageIsMove){
 			return;
@@ -1312,6 +1409,8 @@ app.fn.drawWords = function(that){
 		targetDiv = slideImgList.eq(targetIndex);
 		targetDiv.addClass('zIndex100 opacity0 toShow');
 	}
+    */
+
 
 	function page360Slide(diffX){
 		if(that.pageIsMove||that.page360IsPlay){
@@ -1451,7 +1550,7 @@ app.fn.drawWords = function(that){
 			//callback, 页面切换后的callback
 			setTimeout(function(){
 				that.pageIsMove = false;
-				
+
 				//"360","slide","album","video","map"
 				switch(pageType){
 					case '360':
@@ -1467,7 +1566,7 @@ app.fn.drawWords = function(that){
 					hideLeftRightArrow();
 					initAlbumPage(nextPage);
 					break;
-				}	
+				}
 
 			},showPageDelayTime);
 		}
@@ -1517,7 +1616,7 @@ app.fn.drawWords = function(that){
 			    imgList = elem.parent().find('img'),
 			    imgLen  = imgList.length,
 			    showIndex = '';
-			showIndex = imgIndex;   
+			showIndex = imgIndex;
 			if(imgIndex+1>2){
 				showIndex = 2;
 			}
@@ -1539,12 +1638,12 @@ app.fn.drawWords = function(that){
 			var targetClass = elem.attr('targetClass'),
 			    removeClassStr = 'albumImgAnimate0 albumImgAnimate1 albumImgAnimate2';
 			if(elem.attr('init') === 'true'){
-				
+
 				var imgIndex = elem.index(),
 				    imgList = elem.parent().find('img'),
 				    imgLen  = imgList.length,
 				    showIndex = '';
-				showIndex = imgIndex;   
+				showIndex = imgIndex;
 				if(imgIndex+1>2){
 					showIndex = 2;
 				}
@@ -1560,7 +1659,7 @@ app.fn.drawWords = function(that){
 					elem.parent().find('img').removeAttr('style');
 					initAlbumImgs(elem.parent());
 				}
-				
+
 
 			}else if(elem.hasClass('albumImgToRight') || elem.hasClass('albumImgToLeft')){
 				var imgBox = elem.parent(),

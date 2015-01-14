@@ -26,6 +26,13 @@ a,button,input,select,textarea,form {
 	-webkit-tap-highlight-color:rgba(0,0,0,0)
 }
 
+.startBox{
+	position: absolute;
+	z-index: 100;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+}
 .pageContent {
 	position: relative;
 	height: 100%;
@@ -40,6 +47,123 @@ a,button,input,select,textarea,form {
 	height: 100%;
 	z-index: 1;
 	background-position:center center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	overflow: hidden;
+}
+
+.startHand{
+	position: absolute;
+	z-index: 100;
+}
+.wipeImg{
+	width: 100%;
+	height: 100%;
+}
+.hollowImg{
+	position: absolute;
+	width: 100%;
+	z-index: 50;
+	left: 0;
+	top:0;
+}
+
+#startCanvasOut{
+	position: absolute;
+	overflow: hidden;
+	width: 100%;
+	z-index: 5;
+	left: 0;
+	top:0;
+}
+.solidImg{
+	position: absolute;
+	left:0;
+	top:0;
+	width: 100%;
+	z-index: 2;
+}
+.loadImgBox{
+	position: absolute;
+	z-index: 1;
+	width:1px;
+	height:1px;
+	opacity:0.1;
+	overflow:hidden;
+}
+#loaderBox{
+	position: absolute;
+	z-index: 1000;
+	display: block;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	right: 0;
+	background:#fff;
+}
+.loaderImg{
+	position: absolute;
+	margin: 0 auto;
+	left: 1%;
+	right: 1%;
+	top: 12%;
+	width: 250px;
+	height:250px;
+	background-size: 110%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-ms-border-radius: 50%;
+	-o-border-radius: 50%;
+	border-radius: 50%;
+}
+#spinner {
+	position: relative;
+	width: 250px;
+	height:250px;
+	top: 12%;
+	margin: 0 auto;
+	margin-bottom: -45px;
+	border-radius: 100%;
+	-webkit-animation: rotation 0.750s infinite linear;
+	-moz-animation: rotation 0.750s infinite linear;
+	-o-animation: rotation 0.750s infinite linear;
+	animation: rotation 0.750s infinite linear;
+}
+
+@-webkit-keyframes rotation {
+   from {-webkit-transform: rotate(0deg);}
+   to {-webkit-transform: rotate(359deg);}
+}
+
+#spinner:before {
+	content: "";
+	display: block;
+	position: absolute;
+	left: -3px;
+	top: -3px;
+	height: 100%;
+	width: 100%;
+	border-top: 5px solid rgba(136, 136, 136, 1);
+	border-left: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-radius: 100%;
+}
+
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.swipe-wrap > div {
+    float:left;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    background-position:center center;
 	background-size: cover;
 	background-repeat: no-repeat;
 	overflow: hidden;
@@ -62,7 +186,7 @@ a,button,input,select,textarea,form {
 	width: 100%;
 	height: 600px;
 	top:50%;
-	margin-top:300px;
+	margin-top:-300px;
 	z-index: 20;
 }
 .videoBtn{
@@ -112,6 +236,17 @@ a,button,input,select,textarea,form {
 	100%{
 		top:110%;
 	}
+}
+.videoCloseButton{
+	position: absolute;
+	width: 180px;
+	height: 90px;
+	line-height: 90px;
+	text-align: center;
+	top:-90px;
+	right: 0;
+	background:#333;
+	color: #fff;
 }
 
 .mapCloseButton{
@@ -365,7 +500,7 @@ pageElement animate start
 	}
 }
 
-.rightArrow{	
+.rightArrow{
 	right:2%;
 	background: url(../images/icon/arrow_right.png) no-repeat;
 	-webkit-animation: rightArrow_ani 1.5s ease-out infinite;
@@ -499,8 +634,8 @@ pageElement animate end
 
 .icon-music {
 	position: fixed;
-	top: 10px;
-	right: 10px;
+	top: 15px;
+	right: 15px;
 	width: 54px;
 	height: 54px;
 	display: block;
