@@ -15,9 +15,11 @@
       "src": "templates/styles/common/1.jpg"
     },
     {
-      "type": "",
-      "delayTime": 2000,
-      "motion": "",
+      "type": "move",
+      "from": "right",
+      "position": "50%",
+      "delayTime": 1000,
+      "motion": "move-right-50%",
       "src": "templates/styles/common/2.png"
     },
     {
