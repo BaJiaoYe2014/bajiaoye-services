@@ -1,0 +1,143 @@
+{
+  "id": "002",
+  "name": "越酒品酒会",
+  "author": "芭蕉叶",
+  "thumb": "templates/tpls/002/thumb.jpg",
+  "type": "会议活动",
+  "url": "works/205/NTYzNjE0Mj.html",
+  "music": {
+    "hasMusic": true,
+    "hasIcon": true,
+    "displayName": "default",
+    "name": "templates/tpls/002/bg.mp3",
+    "iconPostion": "top-right",
+    "isAutoPlay": true
+  },
+  "backgroundColor": "#FFFF00",
+  "pageTitle": "我是页面标题",
+  "pageDescribe": "我是页面描述",
+  "shareImage": "templates/tpls/002/thumb.jpg",
+  "pages": [
+    {
+      "index": "0",
+      "name": "开 篇",
+      "type": "clickOpenUpdown",
+      "size": "640*1008",
+      "imgSrc": "templates/tpls/002/clickOpenUpdown_0_start.jpg"
+    },
+    {
+      "index": "1",
+      "name": "封面",
+      "type": "common",
+      "size": "640*1008",
+      "background": "templates/tpls/002/common_1_bg.jpg",
+      "effect": "fade",
+      "animateImgs": []
+    },
+    {
+      "index": 2,
+      "name": "承",
+      "type": "common",
+      "size": "640*1008",
+      "background": "templates/tpls/002/common_2_bg.jpg",
+      "effect": "120%",
+      "animateImgs": [
+        {
+          "type": "fadeIn",
+          "delayTime": 1000,
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_2_1.png"
+        },
+        {
+          "type": "fadeIn",
+          "delayTime": 2000,
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_2_2.png"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "采",
+      "type": "common",
+      "size": "640*1008",
+      "background": "templates/tpls/002/common_3_bg.jpg",
+      "effect": "120%",
+      "animateImgs": [
+        {
+          "type": "fadeIn",
+          "delayTime": 1000,
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_3_1.png"
+        },
+        {
+          "type": "fadeIn",
+          "delayTime": 2000,
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_3_2.png"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "蕴",
+      "type": "common",
+      "size": "640*1008",
+      "background": "templates/tpls/002/common_4_bg.jpg",
+      "effect": "120%",
+      "animateImgs": [
+        {
+          "type": "fadeIn",
+          "delayTime": 1000,
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_4_1.png"
+        },
+        {
+          "type": "fadeIn",
+          "delayTime": 2000,
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_4_2.png"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "name": "酿",
+      "type": "common",
+      "size": "640*1008",
+      "background": "templates/tpls/002/common_5_bg.jpg",
+      "effect": "120%",
+      "animateImgs": [
+        {
+          "type": "fadeIn",
+          "delayTime": "1000",
+          "motion": "fadeIn",
+          "src": "templates/tpls/002/common_5_2.png"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "name": "common",
+      "type": "common",
+      "size": "640*1008",
+      "background": "templates/tpls/002/common_7_bg.jpg",
+      "effect": "120%",
+      "animateImgs": []
+    },
+    {
+      "index": 7,
+      "name": "map",
+      "type": "map",
+      "size": "640*1008",
+      "background": "templates/tpls/002/map_7_bg.jpg",
+      "button": "templates/tpls/002/map_7_btn.png",
+      "buttonX": "300",
+      "buttonY": "450",
+      "title": "shanghaishi",
+      "address": "杭州香积寺",
+      "longitude": 120.153421,
+      "latitude": 30.304148
+    }
+  ]
+}

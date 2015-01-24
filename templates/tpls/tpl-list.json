@@ -7,5 +7,14 @@
     "typeId": "activity",
     "typeName": "会议活动",
     "url": "works/205/NTYzNjE0Mj.html"
+  },
+  {
+    "id": "002",
+    "name": "越酒品酒会",
+    "author": "芭蕉叶",
+    "thumb": "templates/tpls/002/thumb.jpg",
+    "typeId": "activity",
+    "typeName": "会议活动",
+    "url": "works/205/NTYzNjE0Mj.html"
   }
 ]
