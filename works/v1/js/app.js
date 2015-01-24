@@ -19,6 +19,7 @@ app.fn.loader =function(){
     //startAnimate
     //contentPageList
     function getAppImgList(){
+        forObject(app.global);
         forObject(app.startAnimate);
         forObject(app.contentPageList);
         loadImg();
@@ -48,12 +49,13 @@ app.fn.loader =function(){
     }
 
     window.musicIsLoad = function(){
-        alert('music is load ~~');
+        //alert('music is load ~~');
     }
 
     window.appLoader = function(){
         loadImgNum ++;
         if(loadImgNum === imgList.length){
+           
             $('#pageContent .page').each(function(i){
                 if(i>0){
                     $(this).addClass('disNone');
@@ -63,6 +65,7 @@ app.fn.loader =function(){
                 $(this).remove();
                 $('#appLoadImgbox').remove();
             })
+            
         }
     }
 };
@@ -71,12 +74,15 @@ app.fn.loader();;var app = window.app||{};
 app.fn  = app.fn||{};
 
 app.fn.share = function(){
+
+
     share();
+        
     //读取配置参数
     function share(){
         var global = app.global;
         var shareTitle = global.pageTitle;
-        var imgUrl = global.shareImg;
+        var imgUrl = global.shareImage;
         var descContent = global.pageDescribe;
         wx_share_out(shareTitle,imgUrl,descContent);
     }
@@ -84,21 +90,17 @@ app.fn.share = function(){
     function wx_share_out(shareTitle,imgUrl,descContent) {
         var appid = '';
         var lineLink = window.location.href;
-        var preStr   = 'http://'+window.location.host;
-        if(imgUrl=='' || imgUrl=='0' || imgUrl=='null'||!imgUrl) {
-            var imgs = document.getElementsByTagName("img");
-            if(imgs.length>0) {
-                var urlm = /http:\/\//i;
-                imgUrl = imgs[0].src;
-                if(!urlm.test(imgUrl)) {
-                    imgUrl = preStr + imgUrl;
-                } 
-            }
-        }else{
-            imgUrl = preStr + '/images/'+imgUrl;
+        var preStr   = '';
+        var reg = /\/\w+\.html$/i;
+        var matchArr = lineLink.match(reg);
+        if(matchArr){
+            preStr = lineLink.replace(matchArr[0],'');
         }
-        
+        imgUrl = preStr + '/images/'+imgUrl;
+
         function shareFriend() {
+            alert('shareFriend=' + img_url);
+
             WeixinJSBridge.invoke('sendAppMessage',{
                 "appid": appid,
                 "img_url": imgUrl,
@@ -112,6 +114,7 @@ app.fn.share = function(){
             })  
         }
         function shareTimeline() {
+            alert('shareTimeline=' + img_url);
             WeixinJSBridge.invoke('shareTimeline',{
                 "img_url": imgUrl,
                 "img_width": "200",
@@ -123,30 +126,20 @@ app.fn.share = function(){
                    //_report('timeline', res.err_msg);
             });
         }
-        function shareWeibo() {
-            WeixinJSBridge.invoke('shareWeibo',{
-                "content": descContent,
-                "url": lineLink,
-            }, function(res) {
-                //_report('weibo', res.err_msg);
-            });
-        }
         // 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
         document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-            // 发送给好友
+                // 发送给好友
                 WeixinJSBridge.on('menu:share:appmessage', function(argv){
                     shareFriend();
                 });
+
                 // 分享到朋友圈
                 WeixinJSBridge.on('menu:share:timeline', function(argv){
                     shareTimeline();
                 });
-                // 分享到微博
-                WeixinJSBridge.on('menu:share:weibo', function(argv){
-                    shareWeibo();
-                });
         }, false);
     } 
+    
 }
 ;var app = window.app||{};
 app.fn  = app.fn||{};
@@ -222,10 +215,10 @@ app.instance.common = (new function(){
 		}
 	}
 
-	var cssStr = app.fn.getCss();
-	cssStr += '.page{width:'+pageWidth+'px; height:'+pageHeight+'px;}';
+	var cssStr = app.fn.getCss(),
+        bgColorStr = app.global.backgroundColor? 'body,#loaderBox{background:' + app.global.backgroundColor + '}\n':'';
+	cssStr += '.page{width:'+pageWidth+'px; height:'+pageHeight+'px;} \n '+bgColorStr;
     $('title').text(app.global.pageTitle);
-    //console.log('app.global.pageTitle=' + app.global.pageTitle);
 	that.addCss(cssStr);
 	app.fn.share();
 });
@@ -659,10 +652,8 @@ app.fn.drawWords = function(that){
 	function musicIcon(){
 		var musicNode = app.global.music;
 		if(musicNode && musicNode.name){
-
 			if(musicNode.hasMusic){
-
-				var audioStr = '<audio id="myaudio" src="images/'+ musicNode.name +'" autoplay loop="true" hidden="true"  />';
+				var audioStr = '<audio id="myaudio" src="images/'+ musicNode.name +'"  loop="true" hidden="true"  />';
             	$(audioStr).appendTo($(document.body));
             	that.myaudio = $('#myaudio');
 
@@ -676,8 +667,8 @@ app.fn.drawWords = function(that){
 					$(iconStr).appendTo($(document.body));
 					var musicBox    = $('#musicBox'),
 					    musicImg    = musicBox.find('#icon-music-img'),
-					    musicIsPlay = true;
-
+					    musicIsPlay = false;
+					that.musicBox = musicBox;
 					function goMusiceImg(){
 						that.musicTimer = setInterval(function(){
 							var str = musicImg.attr('style'),
@@ -692,24 +683,27 @@ app.fn.drawWords = function(that){
 						},30);
 					}
 
-					goMusiceImg();
-
 					musicBox.bind("touchstart",function(e){
 						if(musicIsPlay){
 							clearInterval(that.musicTimer);
 							domAudio.pause();
 							musicIsPlay = false;
 							musicImg.css("transform","rotate(0deg)");
+							$(this).attr('musicIsPlay','false');
 						}else{
 							goMusiceImg();
 							domAudio.play();
 							musicIsPlay = true;
+							$(this).attr('musicIsPlay','true');
 						}
 
 						e.stopPropagation();
 						e.preventDefault();
 						return false;
 					});
+
+					//开始音乐
+					musicBox.trigger('touchstart');
 
 		        }, false);
 			}
@@ -748,26 +742,18 @@ app.fn  = app.fn||{};
 
 app.fn.baiduMapFun = function(obj){
 
-    var title,address,longitude,latitude,
-        mapId        = 'baidumapContent';
-
-    function setMapValue(obj){
-        title = obj.title;
-        address   = obj.address;
-        longitude = Number(obj.longitude);
+    var mapId        = 'baidumapContent';
+    var longitude = Number(obj.longitude),
         latitude  = Number(obj.latitude);
-        console.log(JSON.stringify(obj));
-    }
 
     //创建和初始化地图函数：
     function initMap(obj){
-        setMapValue(obj)
         createMap();//创建地图
         setMapEvent();//设置地图事件
         addMapControl();//向地图添加控件
         addMarker();//向地图中添加marker
     }
-
+    
     //创建地图函数：
     function createMap(){
         var map = new BMap.Map(mapId);//在百度地图容器中创建一个地图
@@ -775,26 +761,21 @@ app.fn.baiduMapFun = function(obj){
         map.centerAndZoom(point,18);//设定地图的中心点和坐标并将地图显示在地图容器中
         window.map = map;//将map变量存储在全局
     }
-
+    
     //地图事件设置函数：
     function setMapEvent(){
-        map.disableDragging();//禁用地图拖拽事件
+        map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
         map.disableScrollWheelZoom();//禁用地图滚轮放大缩小，默认禁用(可不写)
         map.disableDoubleClickZoom();//禁用鼠标双击放大
-        map.disableKeyboard();//禁用键盘上下左右键移动地图，默认禁用(可不写)
+        map.enableKeyboard();//启用键盘上下左右键移动地图
     }
-
+    
     //地图控件添加函数：
     function addMapControl(){
-        //向地图中添加缩放控件
-    var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_ZOOM});
-    map.addControl(ctrl_nav);
-                }
-
-
-    var pointStr = longitude +'|' + latitude;
+                        }
+    
     //标注点数组
-    var markerArr = [{title:title,content:address,point:pointStr,isOpen:1,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+    var markerArr = [{title:obj.title,content:obj.address,point:longitude+"|"+latitude,isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
          ];
     //创建marker
     function addMarker(){
@@ -814,7 +795,7 @@ app.fn.baiduMapFun = function(obj){
                         color:"#333",
                         cursor:"pointer"
             });
-
+            
             (function(){
                 var index = i;
                 var _iw = createInfoWindow(i);
@@ -849,8 +830,8 @@ app.fn.baiduMapFun = function(obj){
         var icon = new BMap.Icon("http://app.baidu.com/map/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
         return icon;
     }
-
-    initMap(obj);//创建和初始化地图
+    
+    initMap();//创建和初始化地图
 
 }
 ;var app = window.app||{};
@@ -876,25 +857,62 @@ app.fn.video  = (function(){
 
             //curShow  = '';
         pageHtml =  '<div effect="'+ effect +'" type="'+ type +'" ' + styleStr + ' class="page lowZindex disNone">';
+        pageHtml += '<div class="markBox disNone" id="markBox"></div>';
         pageHtml += '<div class="likePageBox" style="background:url(images/'+ item.videoScreenshot +') no-repeat center center ; background-size:100% auto;"></div>';
-        pageHtml += '<img class="videoBtn" src="images/'+ item.videoButton +'" />';
-        pageHtml += '<div class="videoBox disNone">'+ videoCode +'</div></div>';
+        pageHtml += '<div class="videoBtnCover" style="bottom:'+ item.verticalPosition +'px;" > </div>';
+        pageHtml += '<img class="videoBtn" style="bottom:'+ item.verticalPosition +'px;" src="images/'+ item.videoButton +'" />';
+        pageHtml += '<div videoId="'+ item.videoUrl +'" class="videoBox disNone">'+ videoCode +'</div></div>';
         return pageHtml;
     }
 
     var registerEvtFun = function(videoPages){
-        var videoOpenBtn = videoPages.find('.videoBtn'),
-            videoCloseBtn = videoPages.find('.videoCloseButton');
-
+        var videoOpenBtn  = videoPages.find('.videoBtnCover'),
+            videoCloseBtn = videoPages.find('.videoCloseButton'),
+            startAnimate  = app.instance.startAnimate,
+            //musicBox      = $('#musicBox'),
+            videoStopMusic = false,
+            markBox       = videoPages.find('.markBox');
+            //pageContent   = app.instance.pageContent;
+        
+        //打开
         videoOpenBtn.bind('touchend',function(){
-            var curVideoBox = $(this).parent().find('.videoBox');
+            var curVideoBox = $(this).parent().find('.videoBox'),
+                pageContent = app.instance.pageContent,
+                musicBox = app.instance.startAnimate.musicBox;
+            if(!curVideoBox.html()){
+                curVideoBox.html(getVideoCode(curVideoBox.attr("videoId")));
+            }
             curVideoBox.removeClass('disNone');
+            markBox.removeClass('disNone');
+
+            pageContent.pageIsMove = true;
+            console.log('pageContent.pageIsMove=' + pageContent.pageIsMove);
+            pageContent.upDownArrow.addClass('disNone');
+
+            console.log('musicBox.length=' +musicBox.length+'------'+ musicBox.attr('musicIsPlay'));
+            if(musicBox.length>0){
+                if(musicBox.attr('musicIsPlay') === 'true'){
+                    musicBox.trigger('touchstart');
+                    videoStopMusic = true;
+                }
+            }
         });
 
-        videoCloseBtn.bind('touchend',function(){
-            $(this).parent().addClass('disNone');
-        });
+        //videoCloseBtn.bind('touchend',function(){
+        videoPages.on('touchend','.videoCloseButton',function(){
+            var pageContent = app.instance.pageContent,
+                musicBox = app.instance.startAnimate.musicBox;
+            $(this).parent().addClass('disNone').html('');
 
+            markBox.addClass('disNone');
+            pageContent.pageIsMove = false;
+            pageContent.upDownArrow.removeClass('disNone');
+            if(videoStopMusic){
+                musicBox.trigger('touchstart');
+                videoStopMusic = false;
+            }
+
+        });
     }
 
     return {
@@ -924,7 +942,8 @@ app.fn.video  = (function(){
 	function initHtml(){
 		var htmlStr = '<div class="upDownArrow disNone" id="upDownArrow"></div>'+
                       '<div class="rightArrow disNone" id="rightArrow"></div>' +
-					  '<div class="leftArrow disNone" id="leftArrow"></div>',
+					  '<div class="leftArrow disNone" id="leftArrow"></div>';
+
 
 			pageNum = that.pageNum,
 			type  = '',
@@ -1267,6 +1286,7 @@ app.fn.video  = (function(){
 		that.pageIsMove = false;
 
 		that.pageContent.bind('touchstart',function(e){
+            if(that.pageIsMove) return;
 			var touch = event.touches[0];
 	        startX = touch.pageX;
 	        startY = touch.pageY;
@@ -1276,6 +1296,7 @@ app.fn.video  = (function(){
 		});
 
 		that.pageContent.bind('touchmove',function(e){
+            if(that.pageIsMove) return;
 			var touch = event.touches[0];
 
 	        endX = touch.pageX;
@@ -1286,6 +1307,7 @@ app.fn.video  = (function(){
 		});
 
 		that.pageContent.bind('touchend',function(e){
+            if(that.pageIsMove) return;
 			if(!endX){
 				endX = startX;
 			}
@@ -1314,8 +1336,6 @@ app.fn.video  = (function(){
 		function startAnimate(diffX,diffY){
 			if(that.pageIsMove) return;
 			var nextIndex = 0;
-
-
 
 			//左右滑动
 			if( Math.abs(diffX) > that.pageSize.width/5 && Math.abs(diffX) > Math.abs(diffY)){   // shuiping slide
@@ -1380,37 +1400,6 @@ app.fn.video  = (function(){
 			targetImg.addClass('albumImgToLeft');
 		}
 	}
-
-    /*
-	function pageSlide(diffX){
-		if(that.pageIsMove){
-			return;
-		}
-		var curPage = that.pageList.eq(that.curPageIndex),
-			slideImgList = curPage.find('div[slideImg="true"]'),
-			slideLength  = slideImgList.length,
-		    curShowIndex = Number(curPage.attr('curShowIndex')),
-		    targetIndex  = 0,
-		    targetDiv = null;
-
-		//page360IsPlay
-		if(diffX>0){
-			targetIndex = curShowIndex - 1;
-			if(targetIndex === -1){
-				targetIndex = slideLength-1;
-			}
-		}else{   // to left,show next image
-			targetIndex = curShowIndex + 1;
-			if(targetIndex === slideLength){
-				targetIndex = 0;
-			}
-		}
-		that.pageIsMove = true;
-		targetDiv = slideImgList.eq(targetIndex);
-		targetDiv.addClass('zIndex100 opacity0 toShow');
-	}
-    */
-
 
 	function page360Slide(diffX){
 		if(that.pageIsMove||that.page360IsPlay){
@@ -1486,7 +1475,7 @@ app.fn.video  = (function(){
 
 		curPage.removeClass('lowZindex highZindex').addClass('centerZindex');
 		setTimeout(function(){
-			curPage.addClass('disNone');
+			curPage.addClass('disNone').hide();
 		},700);
 
 		nextPage.removeClass('disNone lowZindex centerZindex').addClass('highZindex');

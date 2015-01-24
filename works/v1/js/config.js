@@ -1,13 +1,10 @@
 /*
 每个app必须有的文件
-
 index.html 静态模板页
 app.css,js,images,三文件夹，
 images,里arrow.png, hand.png, 图片是必备的;
-
 动态文件
 config.js,和对应的imgaes或音频文件, 图片、音频文件都放在images里
-
 */
 var app = {
 	/*
@@ -24,7 +21,8 @@ var app = {
         },
         "pageTitle": "我是页面标题",
         "pageDescribe": "我是页面描述",
-        "shareImage": "share_img.jpg"
+        "shareImage": "aa_share_img.jpg",
+        "backgroundColor": "#db1d97"
     },
     /***
 	开篇动画
