@@ -113,6 +113,10 @@ function convertChar($works) {
     	if(!empty($item->address)) {
     		$item->address = urlencode($item->address);
     	}
+
+    	if(!empty($item->title)) {
+    		$item->title = urlencode($item->title);
+    	}
         
         if(!empty($item->animateImgs)) {
         	$elements = array();
