@@ -105,7 +105,10 @@ $app->post('/savePage/:worksId', 'middleware', function ($worksId) use ($app) {
 						$tmpArr = explode('_', $value);
 						$newImg = $tmpArr[0].'_'.$index.'_'.$tmpArr[2];
 						$ani[$k] = $newImg;
-						copy($value, $newImg);
+						if(file_exists($value)) {
+							copy($value, $newImg);
+						}
+						
 					}
 				}
 				$animateImgs[] = $ani;

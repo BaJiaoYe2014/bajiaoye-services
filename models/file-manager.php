@@ -33,7 +33,9 @@ function copyWorksImagesToTmp($works) {
 				$fromPath .= $arr[$i] . '/';
 			}
 			// echo $fromPath.$name.'to:'.$tmpPath.'/'.$fileName.'<br/>';
-			copy($fromPath.$name, $tmpPath.$fileName);
+			if(file_exists($fromPath.$name)) {
+				copy($fromPath.$name, $tmpPath.$fileName);
+			}
 		}
 		
 	}
