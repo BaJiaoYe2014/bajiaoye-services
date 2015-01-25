@@ -249,6 +249,37 @@ $app->get('/forgetNewPass/:email', 'middleware', function ($email) {
 	echo json_encode($result);
 });
 
+$app->get('/getSignature', 'middleware', function () {
+	$url = $_GET["url"];
+	$url = urldecode($url);
+	$appId = 'wx4f3d14438ebc049c';
+	$appSecret = '0a8e39b225a522d519e2f3c7fb14da6e';
+	$tokenUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$appId.'&secret='.$appSecret;
+	$res = file_get_contents($tokenUrl);
+    $resToken = json_decode($res, true);
+    // print_r($resToken);
+    // Array ( [access_token] => I5BR3VkuWJyFBoo5Z5YQ3y31Lj0dQPJR36k9lUNfyn8kw3ceQ5xBtJvjj2TYrL3ooyaWxV3HcGk3PN_GX_J7Ra8hTlhLzl6fEaSUOfU7Z4c [expires_in] => 7200 )
+    $token = $resToken['access_token'];
+    $ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='.$token.'&type=jsapi';
+    $res = file_get_contents($ticketUrl);
+    $resTicket = json_decode($res, true);
+    // {"errcode":0,"errmsg":"ok","ticket":"sM4AOVdWfPE4DxkXGEs8VMKv7FMCPm-I98-klC6SO3Q3AwzxqljYWtzTCxIH9hDOXZCo9cgfHI6kwbe_YWtOQg","expires_in":7200}
+    // print_r($resTicket);
+    $ticket = $resTicket['ticket'];
+    // signature
+    $timestamp = time();
+    $nonceStr = "bajiaoye";
+    //$wxticket = wx_get_jsapi_ticket();
+    $wxOri = 'jsapi_ticket='.$ticket.'&noncestr='.$nonceStr.'&timestamp='.$timestamp.'&url='.$url;
+    $signature = sha1($wxOri);
+    $ret = array();
+    $ret['appId'] = $appId;
+    $ret['timestamp'] = $timestamp;
+    $ret['nonceStr'] = $nonceStr;
+    $ret['signature'] = $signature;
+	echo json_encode($ret);
+});
+
 function arrayToObejct($works) {
 	$temp = array();
 	foreach ($works->pages as $item) {
