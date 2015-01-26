@@ -74,71 +74,81 @@ app.fn.loader();;var app = window.app||{};
 app.fn  = app.fn||{};
 
 app.fn.share = function(){
+   
+    var pageUrl = location.href;
+    var global = app.global;
+    var reg = /^.*\?/i;
+    var matchArr = pageUrl.match(reg);
+    var preStr = '';
+    if(matchArr){
+        preStr = matchArr[0].replace('?','');
+    }
+    var shareImgUrl  = preStr + 'images/'+ global.shareImage;
+    
+    //var imgUrl = preStr + '/images/'+imgUrl;
 
+    getSignDate(shareFun);
 
-    share();
-        
-    //读取配置参数
-    function share(){
-        var global = app.global;
-        var shareTitle = global.pageTitle;
-        var imgUrl = global.shareImage;
-        var descContent = global.pageDescribe;
-        wx_share_out(shareTitle,imgUrl,descContent);
+    function getSignDate(shareFun){
+        $.ajax({
+            type:'get',
+            url:'http://bajiaoye.cn:8000/bjyservice/index.php/getSignature',
+            data:{'url':encodeURIComponent(pageUrl)},
+            success:function(data){
+                if(typeof data === 'string'){
+                    data = JSON.parse(data);
+                    shareFun(data);
+                }
+            },
+            error:function(error){
+                console.log(error);
+            }
+        })
     }
 
-    function wx_share_out(shareTitle,imgUrl,descContent) {
-        var appid = '';
-        var lineLink = window.location.href;
-        var preStr   = '';
-        var reg = /\/\w+\.html$/i;
-        var matchArr = lineLink.match(reg);
-        if(matchArr){
-            preStr = lineLink.replace(matchArr[0],'');
-        }
-        imgUrl = preStr + '/images/'+imgUrl;
-
-        function shareFriend() {
-            alert('shareFriend=' + img_url);
-
-            WeixinJSBridge.invoke('sendAppMessage',{
-                "appid": appid,
-                "img_url": imgUrl,
-                "img_width": "200",
-                "img_height": "200",
-                "link": lineLink,
-                "desc": descContent,
-                "title": shareTitle
-            }, function(res) {
-                //_report('send_msg', res.err_msg);
-            })  
-        }
-        function shareTimeline() {
-            alert('shareTimeline=' + img_url);
-            WeixinJSBridge.invoke('shareTimeline',{
-                "img_url": imgUrl,
-                "img_width": "200",
-                "img_height": "200",
-                "link": lineLink,
-                "desc": descContent,
-                "title": shareTitle
-            }, function(res) {
-                   //_report('timeline', res.err_msg);
+    function shareFun(data){
+        data.jsApiList = ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo'];
+        wx.config(data);
+        
+        //通过ready接口处理成功验证
+        //alert('title=' + global.pageTitle + '---imgUrl:' + shareImgUrl);
+        wx.ready(function() {
+            //分享到朋友圈
+            wx.onMenuShareTimeline({
+                desc: global.pageDescribe,
+                title: global.pageTitle,
+                // 分享标题
+                link: pageUrl,
+                // 分享链接
+                imgUrl: shareImgUrl,
+                // 分享图标
+                success: function() {
+                   
+                }
             });
-        }
-        // 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
-        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-                // 发送给好友
-                WeixinJSBridge.on('menu:share:appmessage', function(argv){
-                    shareFriend();
-                });
+            //分享给朋友
+            wx.onMenuShareAppMessage({
+                desc: global.pageDescribe,
+                title: global.pageTitle,
+                // 分享标题
+                link: pageUrl,
+                // 分享链接
+                imgUrl: shareImgUrl,
+                // 分享图标
+                success: function() {
+                   
+                }
+            });
 
-                // 分享到朋友圈
-                WeixinJSBridge.on('menu:share:timeline', function(argv){
-                    shareTimeline();
-                });
-        }, false);
-    } 
+        });
+
+        wx.error(function(res) {
+            for(var k in res){
+                alert(k + '--' + res[k]);
+            }
+        });
+       
+    }
     
 }
 ;var app = window.app||{};
@@ -224,6 +234,65 @@ app.instance.common = (new function(){
 });
 
 
+
+;var app = window.app||{};
+app.fn  = app.fn||{};
+
+//click open
+app.fn.invitation = function(that){
+    var startHtml = '';
+    var startBox = that.startBox;
+    var btn = startBox.find('.invitatationBtn'),
+        tip = startBox.find('.invitatationTip'),
+        mainBox = startBox.find('#invitationMainBox'),
+        upBox = startBox.find('.startItemBoxTop'),
+        downBox = startBox.find('.startItemBoxDown');
+
+    registerEvt();
+
+
+
+    function registerEvt(){
+        
+        btn.bind('click',function(){
+
+            tip.animate({'opacity':0},500,function(){
+                $(this).remove();
+            });
+            
+            mainBox.hide();
+            $(this).hide();
+
+            
+            upBox.animate(
+                {top:-1000},
+                {
+                easing: 'easeInOutCubic',
+                duration: 1000,
+                complete:function(){
+                }
+            });
+
+            setTimeout(function(){
+                downBox.animate(
+                    {top:1000},
+                    {
+                    easing: 'easeInOutCubic',
+                    duration: 1000,
+                    complete:function(){
+                        startBox.hide();
+                        if(app.instance.pageContent.startPageOne){
+                            app.instance.pageContent.startPageOne();
+                        }
+                    }
+                });
+            },500);
+
+        })
+
+    }
+   
+}
 
 ;var app = window.app||{};
 app.fn  = app.fn||{};
@@ -642,6 +711,10 @@ app.fn.drawWords = function(that){
 
 			case "drawWords":  // 描字
 			app.fn.drawWords(that);
+			break;
+
+			case  "invitation": //邀请函
+			app.fn.invitation(that);
 			break;
 		}
 	}
@@ -1115,14 +1188,16 @@ app.fn.video  = (function(){
 	function buildMapPage(item,type,i){
 		var htmlStr = '',
 		    pageBg    = item.background,
-		    buttonSrc = item.button;
-		htmlStr += '<div effect="fade" pageindex="'+i+'" class="page disNone"  type="'+ type +'" style="background-image:url(images/'+ pageBg +')"><img class="showMapbutton" src="images/'+ buttonSrc +'" />  <div class="mapBox"><div class="mapContent" id="baidumapContent"></div><span class="mapCloseButton"> 关闭 </span></div> </div>';
+		    buttonSrc = item.button,
+            toTop = 0;
+		htmlStr += '<div effect="fade" pageindex="'+i+'" class="page disNone"  type="'+ type +'" style="background-image:url(images/'+ pageBg +')"><img class="showMapbutton" src="images/'+ buttonSrc +'" /><div class="videoBtnCover boBtnCover"></div>  <span class="mapCloseButton disNone" id="mapCloseButton" style="top:'+ toTop+'px;"> 关闭 </span><div class="mapBox"><div class="mapContent" id="baidumapContent"></div></div> </div>';
 		return htmlStr;
 	}
 
 	function setCssEvt($element,callback){
 		if(!$element.attr('hasEvt')){
 			$element.bind('webkitAnimationEnd',function(){
+
 				callback($(this));
 			});
 			$element.attr('hasEvt',true);
@@ -1218,7 +1293,7 @@ app.fn.video  = (function(){
         var mapPage = that.pageList.filter('[type="map"]'),
             showMapButton = mapPage.find('.showMapbutton'),
             mapBox = $('#baidumapContent').parent(),
-            closeBtn = mapBox.find('.mapCloseButton'),
+            closeBtn = $('#mapCloseButton'),
             mapIsShow = false,
             mapIndex = Number(showMapButton.parent().attr('pageindex'));
 
@@ -1238,6 +1313,11 @@ app.fn.video  = (function(){
             that.upDownArrow.hide();
             that.pageIsMove = true;
             mapBox.show().animate({'top':'30%'},400);
+            setTimeout(function(){
+                closeBtn.css('opacity',1).removeClass('disNone');
+            },400);
+            
+
             e.stopPropagation();
             e.preventDefault();
             return false;
@@ -1245,6 +1325,7 @@ app.fn.video  = (function(){
 
         closeBtn.bind('touchend',function(e){
             mapBox.addClass('hideMapBox');
+            $(this).animate({'opacity':0},500);
             that.upDownArrow.show();
             that.pageIsMove = false;
 
@@ -1797,10 +1878,18 @@ app.fn.video  = (function(){
 			    fromClass = itemBox.attr('fromClass'),
 			    targetClass  = itemBox.attr('targetClass'),
 			    animateClass = itemBox.attr('animateclass'),
-			    delayTime    = Number(itemBox.attr('delayTime'));
+			    delayTime    = Number(itemBox.attr('delayTime')),
+                type = itemBox.attr('type');
 
 			setTimeout(function(){
-				itemBox.removeClass('disNone').addClass(animateClass);
+                //内页动画
+                if(type==='fadeIn'){
+                    //淡出动画
+                    itemBox.removeClass('disNone').animate({'opacity':1},1000);
+                }else{
+                    itemBox.removeClass('disNone').addClass(animateClass);
+                }
+
 			},delayTime);
 		});
 
