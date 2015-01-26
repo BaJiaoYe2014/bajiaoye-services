@@ -16,5 +16,14 @@
     "typeId": "activity",
     "typeName": "会议活动",
     "url": "works/219/NzE4NTE0Mj.html"
+  },
+  {
+    "id": "003",
+    "name": "越酒",
+    "author": "芭蕉叶",
+    "thumb": "templates/tpls/003/thumb.jpg",
+    "typeId": "activity",
+    "typeName": "会议活动",
+    "url": "works/219/NzE4NTE0Mj.html"
   }
 ]
