@@ -48,14 +48,9 @@ app.fn.loader =function(){
         $(htmlStr).appendTo($(document.body));
     }
 
-    window.musicIsLoad = function(){
-        //alert('music is load ~~');
-    }
-
     window.appLoader = function(){
         loadImgNum ++;
         if(loadImgNum === imgList.length){
-           
             $('#pageContent .page').each(function(i){
                 if(i>0){
                     $(this).addClass('disNone');
@@ -238,65 +233,6 @@ app.instance.common = (new function(){
 ;var app = window.app||{};
 app.fn  = app.fn||{};
 
-//click open
-app.fn.invitation = function(that){
-    var startHtml = '';
-    var startBox = that.startBox;
-    var btn = startBox.find('.invitatationBtn'),
-        tip = startBox.find('.invitatationTip'),
-        mainBox = startBox.find('#invitationMainBox'),
-        upBox = startBox.find('.startItemBoxTop'),
-        downBox = startBox.find('.startItemBoxDown');
-
-    registerEvt();
-
-
-
-    function registerEvt(){
-        
-        btn.bind('click',function(){
-
-            tip.animate({'opacity':0},500,function(){
-                $(this).remove();
-            });
-            
-            mainBox.hide();
-            $(this).hide();
-
-            
-            upBox.animate(
-                {top:-1000},
-                {
-                easing: 'easeInOutCubic',
-                duration: 1000,
-                complete:function(){
-                }
-            });
-
-            setTimeout(function(){
-                downBox.animate(
-                    {top:1000},
-                    {
-                    easing: 'easeInOutCubic',
-                    duration: 1000,
-                    complete:function(){
-                        startBox.hide();
-                        if(app.instance.pageContent.startPageOne){
-                            app.instance.pageContent.startPageOne();
-                        }
-                    }
-                });
-            },500);
-
-        })
-
-    }
-   
-}
-
-;var app = window.app||{};
-app.fn  = app.fn||{};
-
 app.fn.clickOpenUpdown = function(that){
     app.fn.clickOpen(that,"upDown");
 }
@@ -343,7 +279,7 @@ app.fn.clickOpen = function(that,type){
 
 app.fn.upDownEvt = function(that,ctx){
     var isAniate = false;
-    that.startBox.bind('touchend',function(e){
+    that.startBox.bind('touchstart',function(e){
         if(isAniate) return;
         isAniate = true;
         var clipHeight = that.pageSize.height/8,
@@ -384,7 +320,7 @@ app.fn.upDownEvt = function(that,ctx){
 
 app.fn.leftRightEvt = function(that,ctx){
     var isAniate = false;
-    that.startBox.bind('touchend',function(e){
+    that.startBox.bind('touchstart',function(e){
         if(isAniate) return;
         isAniate = true;
         var clipWidth = that.pageSize.width/8,
@@ -690,7 +626,7 @@ app.fn.drawWords = function(that){
 	that.stopHand       = false;
 	that.drawSize       = 13;
 
-	that.start = function(){
+	start = function(){
 		var type = app.startAnimate.type;
 		hideLoader();
 		musicIcon();
@@ -719,54 +655,89 @@ app.fn.drawWords = function(that){
 		}
 	}
 
-	//临时执行,注意删除
-	that.start();
+	start();
 
 	function musicIcon(){
 		var musicNode = app.global.music;
 		if(musicNode && musicNode.name){
 			if(musicNode.hasMusic){
-				var audioStr = '<audio id="myaudio" src="images/'+ musicNode.name +'"  loop="true" hidden="true"  />';
-            	$(audioStr).appendTo($(document.body));
-            	that.myaudio = $('#myaudio');
+				var audioStr = '<audio id="myaudio" src="images/'+ musicNode.name +'"  loop="true" hidden="true"  />',
+            	    domAudio = null,
+            	    iconStr  =  '<div musicIsPlay="false" class="icon-music" id="musicBox">' +
+								'<img id="icon-music-img" src="images/icon/icon_music.png" style="transform: rotate(0deg); " />'+
+								'</div>',
+					musicBox = null,
+					musicImg = null;
 
-            	var domAudio = that.myaudio[0];
+            	init();
 
-				domAudio.addEventListener('canplaythrough', function(e){
-		            //callback(true);
-		            var iconStr =  '<div class="icon-music" id="musicBox">' +
-							       '<img id="icon-music-img" src="images/icon/icon_music.png" style="transform: rotate(0deg); " />'+
-							       '</div>';
-					$(iconStr).appendTo($(document.body));
-					var musicBox    = $('#musicBox'),
-					    musicImg    = musicBox.find('#icon-music-img'),
-					    musicIsPlay = false;
-					that.musicBox = musicBox;
-					function goMusiceImg(){
-						that.musicTimer = setInterval(function(){
-							var str = musicImg.attr('style'),
-								reg = /\d+/g,
-								angle = parseInt(str.match(reg)[0]),
-								newAngle = angle + 10;
+            	function init(){
+	            	$(audioStr).appendTo($(document.body));
+	            	that.myaudio = $('#myaudio');
+	            	domAudio = that.myaudio[0];
 
-							if(newAngle>360){
-								newAngle = newAngle-360;
+	            	if("oncanplaythrough" in document){
+	            		//android  自动播放音乐
+	            		registerCanplayEvt();
+	            	}else{
+	            		//iphone
+	            		addMusicIcon();
+						registerIconEvt();
+						//第一次点击播放
+						that.startBox.bind('touchstart',function(){
+							if(!that.firstPlay){
+								goMusiceImg();
+								domAudio.play();
+								musicBox.attr('musicIsPlay','true');
+								that.firstPlay = true;
 							}
-							musicImg.css("transform","rotate("+ newAngle +"deg)");
-						},30);
-					}
+						});
+	            	}
+            	}
 
-					musicBox.bind("touchstart",function(e){
-						if(musicIsPlay){
+            	function addMusicIcon(){
+            		$(iconStr).appendTo($(document.body));
+            		musicBox    = $('#musicBox');
+				    musicImg    = musicBox.find('#icon-music-img');
+					that.musicBox = musicBox;
+            	}
+
+            	function goMusiceImg(){
+					that.musicTimer = setInterval(function(){
+						var str = musicImg.attr('style'),
+							reg = /\d+/g,
+							angle = parseInt(str.match(reg)[0]),
+							newAngle = angle + 10;
+
+						if(newAngle>360){
+							newAngle = newAngle-360;
+						}
+						musicImg.css("transform","rotate("+ newAngle +"deg)");
+					},30);
+				}
+
+            	function registerCanplayEvt(){
+            		domAudio.addEventListener('canplaythrough', function(e){
+			            //callback(true);
+						addMusicIcon();
+						registerIconEvt();
+						//开始音乐
+						musicBox.trigger('touchstart');
+			        }, false);
+            	}
+
+            	function registerIconEvt(){
+            		musicBox.bind("touchstart",function(e){
+            			var musicIsPlay = $(this).attr('musicIsPlay');
+
+						if(musicIsPlay === 'true'){
 							clearInterval(that.musicTimer);
 							domAudio.pause();
-							musicIsPlay = false;
 							musicImg.css("transform","rotate(0deg)");
 							$(this).attr('musicIsPlay','false');
-						}else{
+						}else if(musicIsPlay === 'false'){
 							goMusiceImg();
 							domAudio.play();
-							musicIsPlay = true;
 							$(this).attr('musicIsPlay','true');
 						}
 
@@ -774,31 +745,10 @@ app.fn.drawWords = function(that){
 						e.preventDefault();
 						return false;
 					});
-
-					//开始音乐
-					musicBox.trigger('touchstart');
-
-		        }, false);
+            	}
 			}
 		}
 	}
-
-
-
-	function getcontentFirstImg (argument) {
-		var item    = app.contentPageList[0],
-		    imgStr  = '',
-		    type = item.type;
-
-		if(type === "OneImg"){
-			imgStr = item.imageName;
-		}else if(type === "TwoImg"){
-			imgStr = item.bgImgName;
-		}
-		return imgStr;
-	}
-
-
 
 	//隐藏loader.........
 	function hideLoader(){
@@ -1267,28 +1217,7 @@ app.fn.video  = (function(){
 				that.pageIsMove = false;
 			}
 
-		})
-
-		//slideToShow_toright
-        /*
-        console.log('slideImgBoxs=' + slideImgBoxs.length);
-		setCssEvt(slideImgBoxs,function($element){
-			//toright100_hide
-			var hideClass = $element.attr('hideClass'),
-				showClass = $element.attr('showClass');
-			//toright100_hide  toright0_show
-			if($element.hasClass('toright_hide')){
-				$element.removeClass('toright_hide').addClass(hideClass).attr('state','hidden');
-				that.rightTipBtn.css('background-image','url(images/icon/arrow_right_1.png)');
-				that.pageIsMove = false;
-			}else if($element.hasClass('toright_show')){
-				$element.removeClass('toright_show').addClass(showClass).attr('state','show');
-				that.rightTipBtn.css('background-image','url(images/icon/arrow_right_2.png)');
-				that.pageIsMove = false;
-			}
-		})
-        */
-
+		});
 		//百度map按钮
         var mapPage = that.pageList.filter('[type="map"]'),
             showMapButton = mapPage.find('.showMapbutton'),
