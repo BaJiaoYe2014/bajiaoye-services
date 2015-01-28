@@ -14,8 +14,8 @@ function filesUpload($userId) {
     if (empty($_FILES) === false) {
         //判断检查
         $photo_up_size = $_FILES["file"]["size"];
-        if($photo_up_size > 2097152){
-            exit("对不起，您上传的照片超过了2M。");
+        if($photo_up_size > (10*1024*1024)){
+            exit("对不起，您上传的照片超过了10M。");
         }
         if($_FILES["file"]["error"] > 0){
             exit("文件上传发生错误：".$_FILES["file"]["error"]);
