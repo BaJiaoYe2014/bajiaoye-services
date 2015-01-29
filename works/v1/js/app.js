@@ -1019,10 +1019,18 @@ app.fn.video  = (function(){
 		that.upDownArrow = $('#upDownArrow');
         that.pageList.eq(0).removeClass('disNone').find('div').removeClass('disNone');
 
+        addCopyRight();
+
 		//arrowEvt();
 		pageBoxCssEvt();
 		pageTouchEvt();
 	}
+
+    function addCopyRight(){
+        var html = $('<div class="opacity0 copyright_info"><a href="http://www.bajiaoye.cn" target="_blank">powered by <span>BaJiaoYe.cn</span></a></div>'); 
+        $(html).appendTo(that.pageList.eq(that.pageNum-1));
+        console.log('addClass ok ~~~');
+    }
 
 
 	function buildAlbumPage(item,type){
@@ -1163,9 +1171,27 @@ app.fn.video  = (function(){
 		    tipImgBoxs = pageList.find('div[tipImg="true"]'),
 		    slideImgBoxs = pageList.find('div[slide="true"]'),
 		    Img360Boxs = pageList.filter('[type="360"]'),
-		    videoPages = pageList.filter('[type="video"]');
+		    videoPages = pageList.filter('[type="video"]'),
+            $copyRight = pageList.eq(that.pageNum-1).find('.copyright_info'),
+            $mapBtn = pageList.find('.showMapbutton');
 
 		app.fn.video.registerEvt(videoPages);
+
+        var $newMapBtn = $mapBtn.clone().css({'visibility':'hidden'}).appendTo($(document.body));
+
+        setTimeout(function(){
+            var width = $newMapBtn.width();
+            if(width){
+                $mapBtn.css({'margin-left':width/2*(-1)});
+            }
+            $newMapBtn.remove();
+        },500);
+
+        setCssEvt($copyRight,function($element){
+            if($element.hasClass('copyright_info_show')){
+                $element.removeClass('opacity0 copyright_info_show');
+            }
+        });
 
 		setCssEvt(fadePages,function($element){
 			if($element.hasClass('toOpacity100')){
@@ -1489,6 +1515,7 @@ app.fn.video  = (function(){
 		},700);
 
 		nextPage.removeClass('disNone lowZindex centerZindex').addClass('highZindex');
+        showCopyRight(curPage,nextPage);
 
 		if(/common|gallery/.test(pageType)){
 			var innerAnimateBoxs = nextPage.find('div[animate="true"]');
@@ -1513,6 +1540,14 @@ app.fn.video  = (function(){
 			that.rightTipBtn.hide();
 		}
 	}
+
+    //显示版权信息
+    function showCopyRight(hidePage,showPage){
+        var $copyRight = showPage.find('.copyright_info');
+        if($copyRight.length>0){
+            $copyRight.removeClass('copyright_info_show').addClass('copyright_info_show opacity0');
+        }
+    }
 
 	//show new page
 	function showNextPage(nextIndex,isFirst){
