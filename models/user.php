@@ -141,12 +141,12 @@ function resetNewPassword($user) {
 // Add one signup user
 function addSignupUser($user) {
 	$ret = false;
-	print_r($user);
+	// print_r($user);
 	$sql = "INSERT INTO customer (name, phone, position, company, shop) values (".
 		"'$user->name', '$user->phone', '$user->position', '$user->company', '$user->shop')";
 	mysql_query($sql);
 	if(mysql_insert_id()) {
-		$ret = getUserById(mysql_insert_id());
+		$ret = true;
 	}
 	return $ret;
 }
@@ -154,9 +154,13 @@ function addSignupUser($user) {
 // Get all sign up users
 function getSignupUsers() {
 	$result = mysql_query("SELECT * FROM customer");
-	$row = mysql_fetch_array($result, MYSQL_ASSOC);
+	$ret = array();
+	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+	    array_push($ret, $row);
+	}
+
 	mysql_free_result($result);
-	return $row;
+	return $ret;
 }
 
 ?>
