@@ -280,6 +280,22 @@ $app->get('/getSignature', 'middleware', function () {
 	echo json_encode($ret);
 });
 
+$app->post('/signup', 'middleware', function () use ($app) {
+	$request = $app->request;
+	$params = $request->getBody();
+	print_r($request->getBody());
+	$jsonObj = json_decode($params, true);
+	$jsonObj = (object) $jsonObj;
+	print_r($jsonObj);
+	$result = addSignupUser($jsonObj);
+	echo json_encode($result);
+});
+
+$app->get('/signupList', 'middleware', function () {
+	$result = getSignupUsers();
+	echo json_encode($result);
+});
+
 function arrayToObejct($works) {
 	$temp = array();
 	foreach ($works->pages as $item) {

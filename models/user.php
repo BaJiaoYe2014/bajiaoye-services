@@ -138,6 +138,25 @@ function resetNewPassword($user) {
 	return $ret;
 }
 
+// Add one signup user
+function addSignupUser($user) {
+	$ret = false;
+	print_r($user);
+	$sql = "INSERT INTO customer (name, phone, position, company, shop) values (".
+		"'$user->name', '$user->phone', '$user->position', '$user->company', '$user->shop')";
+	mysql_query($sql);
+	if(mysql_insert_id()) {
+		$ret = getUserById(mysql_insert_id());
+	}
+	return $ret;
+}
 
+// Get all sign up users
+function getSignupUsers() {
+	$result = mysql_query("SELECT * FROM customer");
+	$row = mysql_fetch_array($result, MYSQL_ASSOC);
+	mysql_free_result($result);
+	return $row;
+}
 
 ?>
